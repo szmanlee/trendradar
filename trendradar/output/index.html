@@ -1217,7 +1217,7 @@
         let isFeaturedMode = false;
         let isAllCategoriesMode = true;
         
-        // 初始化分类筛选器
+        // 初始化分类筛选器（使用数据文件中的分类）
         function initCategoryFilter() {
             const filter = document.getElementById('clawCategoryFilter');
             const quickFilter = document.getElementById('categoryQuickFilter');
@@ -1225,19 +1225,22 @@
             if (!window.clawSkillsData || !window.clawSkillsData.categories) return;
             
             // 添加全部分类选项
-            filter.innerHTML = '<option value="all">📂 全部分类 (32)</option>';
+            filter.innerHTML = '<option value="all">📂 全部分类</option>';
             
             // 添加所有分类到下拉框
             window.clawSkillsData.categories.forEach(cat => {
                 filter.innerHTML += `<option value="${cat.id}">${cat.icon} ${cat.name} (${cat.count})</option>`;
             });
             
-            // 添加快捷分类标签 (只显示前12个)
+            // 添加快捷分类标签 - 使用数据文件的快捷分类列表（美化样式）
             let quickHtml = '';
-            window.clawSkillsData.categories.slice(0, 12).forEach(cat => {
+            const quickCats = window.clawSkillsData.quickCategories || window.clawSkillsData.categories.slice(0, 12);
+            quickCats.forEach((cat, index) => {
                 quickHtml += `<button onclick="quickFilterCategory('${cat.id}')" 
-                    style="background: #f0f0f0; border: none; padding: 6px 12px; border-radius: 15px; cursor: pointer; font-size: 12px; transition: all 0.2s;">
-                    ${cat.icon} ${cat.name}
+                    style="background: linear-gradient(135deg, #fff 0%, #f0f4ff 100%); border: 1px solid #667eea; padding: 6px 14px; border-radius: 18px; cursor: pointer; font-size: 13px; transition: all 0.2s; color: #667eea; font-weight: 500;"
+                    onmouseover="this.style.background='linear-gradient(135deg, #667eea, #764ba2)'; this.style.color='white';"
+                    onmouseout="this.style.background='linear-gradient(135deg, #fff 0%, #f0f4ff 100%)'; this.style.color='#667eea';">
+                    ${cat.name}
                 </button>`;
             });
             quickFilter.innerHTML = quickHtml;
@@ -1303,9 +1306,49 @@
             }, 300);
         }
         
-        // 渲染单个技能卡片
+        // 渲染单个技能卡片（增强版 - 支持中文）
         function renderSkillCard(skill) {
-            const categoryNames = {
+            // 获取中文分类名称
+            const categoryName = skill.categoryName || getCategoryNameCN(skill.category);
+            
+            // 获取标签
+            const tagsHtml = skill.tags && skill.tags.length > 0 
+                ? `<div style="display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px;">
+                    ${skill.tags.slice(0, 4).map(tag => `<span style="background: #e8f0fe; color: #667eea; padding: 2px 8px; border-radius: 10px; font-size: 11px;">${tag}</span>`).join('')}
+                   </div>`
+                : '';
+            
+            // 中文名优先显示
+            const displayName = skill.nameZh || skill.name;
+            
+            return `
+                <div class="status-card" style="min-width: 280px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);"
+                     onclick="window.open('${skill.url}', '_blank')"
+                     onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.2)';"
+                     onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none';"
+                     title="点击访问: ${skill.url}">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <span style="font-size: 28px;">${skill.icon || '📦'}</span>
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; font-size: 15px; color: #333; line-height: 1.3;">${displayName}</div>
+                            ${skill.nameZh ? `<div style="font-size: 12px; color: #999; margin-top: 2px;">${skill.name}</div>` : ''}
+                        </div>
+                        <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 4px 10px; border-radius: 12px; font-size: 11px; white-space: nowrap;">
+                            ${categoryName}
+                        </span>
+                    </div>
+                    <div style="color: #666; font-size: 13px; line-height: 1.6; margin-bottom: 8px;">${skill.desc}</div>
+                    ${tagsHtml}
+                    <div style="color: #667eea; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;">
+                        <span style="color: #999;">🔗</span> ${skill.url}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 获取中文分类名称
+        function getCategoryNameCN(categoryId) {
+            const categoryMap = {
                 coding: '💻 编码', marketing: '📈 营销', communication: '💬 通信',
                 git: '🔀 Git', productivity: '⚡ 效率', speech: '🎤 语音',
                 moltbook: '📖 读书', ai: '🤖 AI', smarthome: '🏠 智能家居',
@@ -1318,53 +1361,41 @@
                 clawdbot: '🤖 Clawdbot', personal: '🌱 个人', agentprotocols: '🤝 协议',
                 cli: '💻 CLI', health: '❤️ 健康'
             };
-            const categoryName = categoryNames[skill.category] || '📦 其他';
-            
-            return `
-                <div class="status-card" style="min-width: 280px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
-                     onclick="window.open('${skill.url}', '_blank')"
-                     onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)';"
-                     onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none';"
-                     title="点击访问: ${skill.url}">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <span style="font-size: 24px;">${skill.icon || '📦'}</span>
-                        <span style="font-weight: bold; font-size: 15px; color: #333;">${skill.name}</span>
-                        <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">
-                            ${categoryName}
-                        </span>
-                    </div>
-                    <div style="color: #666; font-size: 13px; line-height: 1.5; margin-bottom: 8px;">${skill.desc}</div>
-                    <div style="color: #667eea; font-size: 12px; display: flex; align-items: center; gap: 5px;">
-                        <span style="color: #999;">🔗</span> ${skill.url}
-                    </div>
-                </div>
-            `;
+            return categoryMap[categoryId] || '📦 其他';
         }
         
-        // 渲染分类视图 (按分类分组显示)
+        // 渲染分类视图 (按分类分组显示 - 增强版)
         function renderByCategories() {
-            let html = '<div style="display: flex; flex-direction: column; gap: 20px;">';
+            let html = '<div style="display: flex; flex-direction: column; gap: 25px;">';
             
             window.clawSkillsData.categories.forEach(cat => {
                 html += `
-                    <div style="background: #f8f9fa; border-radius: 12px; padding: 15px;">
-                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
-                            <span style="font-size: 24px;">${cat.icon}</span>
-                            <span style="font-weight: bold; font-size: 16px; color: #333;">${cat.name}</span>
-                            <span style="background: #667eea; color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px;">
+                    <div style="background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); border-radius: 16px; padding: 20px; border: 1px solid #eee; transition: box-shadow 0.2s;"
+                         onmouseover="this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.15)';"
+                         onmouseout="this.style.boxShadow='none';">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid linear-gradient(90deg, #667eea, #764ba2);">
+                            <span style="font-size: 28px;">${cat.icon}</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: bold; font-size: 18px; color: #333;">${cat.name}</div>
+                                <div style="font-size: 12px; color: #999; margin-top: 3px;">${cat.desc || ''}</div>
+                            </div>
+                            <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 5px 14px; border-radius: 15px; font-size: 14px; font-weight: bold;">
                                 ${cat.count}
                             </span>
                         </div>
                         <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                 `;
                 
-                // 这里显示该分类的热门技能示例 (实际应该从完整数据中获取)
+                // 显示该分类的技能示例
                 html += renderSkillCard({
-                    name: cat.id,
-                    desc: `${cat.name} 类别包含 ${cat.count} 个 Skills`,
+                    nameZh: cat.name,
+                    name: cat.name,
+                    desc: `包含 ${cat.count} 个精选 Skills，涵盖 ${cat.desc || '各类工具'}。点击查看详情。`,
                     category: cat.id,
+                    categoryName: cat.name,
                     url: `https://clawhub.com/search?q=${cat.id}`,
-                    icon: cat.icon
+                    icon: cat.icon,
+                    tags: ['查看全部', '精选']
                 });
                 
                 html += `
@@ -1374,13 +1405,14 @@
             });
             
             html += '</div>';
-            html += `<div style="text-align: center; margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #667eea20, #764ba220); border-radius: 12px;">
-                <p style="color: #666; margin-bottom: 10px;">💡 完整 3002+ Skills 数据已加载</p>
-                <p style="color: #999; font-size: 13px;">使用上方的搜索框和分类筛选器查找具体 Skills</p>
+            html += `<div style="text-align: center; margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 16px; border: 1px dashed #667eea;">
+                <p style="color: #667eea; font-size: 18px; font-weight: bold; margin-bottom: 8px;">🎉 完整数据已加载</p>
+                <p style="color: #666; font-size: 14px; margin-bottom: 5px;">📦 共 <span style="font-weight: bold; color: #667eea;">${window.clawSkillsData.stats.totalSkills.toLocaleString()}</span> 个 Skills | 📂 <span style="font-weight: bold; color: #667eea;">${window.clawSkillsData.stats.totalCategories}</span> 个分类</p>
+                <p style="color: #999; font-size: 12px;">💡 使用上方的搜索框和分类筛选器查找具体 Skills，或访问 <a href="https://clawhub.com" target="_blank" style="color: #667eea;">clawhub.com</a> 获取更多</p>
             </div>`;
             
             document.getElementById('clawSkillsList').innerHTML = html;
-            document.getElementById('filteredCount').textContent = '3002';
+            document.getElementById('filteredCount').textContent = window.clawSkillsData.stats.totalSkills.toLocaleString();
             document.getElementById('loadMoreContainer').style.display = 'none';
         }
         
