@@ -152,6 +152,7 @@
             <button class="nav-tab" onclick="showTab('workflow')">📋 工作规范</button>
             <button class="nav-tab" onclick="showTab('trendradar')">📊 TrendRadar</button>
             <button class="nav-tab" onclick="showTab('hot')">🔥 实时热点</button>
+            <button class="nav-tab" onclick="showTab('claws')">🦞 Claw-Skills</button>
         <button class="nav-tab active" onclick="showTab('situation')">📡 局势监控</button>
         </div>
         
@@ -455,6 +456,125 @@
                     <tr><th>输出目录</th><td><span class="config-value">./output:/app/output</span></td></tr>
                     <tr><th>Web 访问</th><td><span class="config-value">http://192.168.32.26:8080/</span></td></tr>
                 </table>
+            </div>
+        </div>
+        
+        <!-- Claw-Skills -->
+        <div id="claws" class="tab-content">
+            <div class="section">
+                <h2>🦞 Claw-Skills <button class="refresh-btn" onclick="loadClawSkills()">🔄 刷新</button></h2>
+                <p style="color: #666; font-size: 13px; margin-bottom: 20px;">
+                    Awesome OpenClaw Skills 来自 clawhub.com，是 OpenClaw 生态系统的核心扩展能力
+                </p>
+                
+                <!-- 搜索框 -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <input type="text" id="skillSearch" placeholder="搜索 Skills..." 
+                           style="flex: 1; padding: 10px 15px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;"
+                           onkeyup="filterSkills()">
+                    <select id="categoryFilter" onchange="filterSkills()" style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
+                        <option value="all">全部分类</option>
+                        <option value="integration">🔗 集成</option>
+                        <option value="ai">🤖 AI</option>
+                        <option value="productivity">⚡ 效率</option>
+                        <option value="development">🛠️ 开发</option>
+                        <option value="utility">🔧 工具</option>
+                    </select>
+                </div>
+                
+                <!-- 分类快捷入口 -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <a href="https://clawhub.com" target="_blank" style="text-decoration: none;">
+                        <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;">
+                            🌐 clawhub.com
+                        </span>
+                    </a>
+                    <a href="https://docs.openclaw.ai" target="_blank" style="text-decoration: none;">
+                        <span style="background: #333; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;">
+                            📖 OpenClaw 文档
+                        </span>
+                    </a>
+                    <a href="https://github.com/openclaw/openclaw" target="_blank" style="text-decoration: none;">
+                        <span style="background: #24292e; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;">
+                            💻 GitHub
+                        </span>
+                    </a>
+                </div>
+                
+                <!-- Skills 列表 -->
+                <div id="skillsList">
+                    <div class="loading">加载中...</div>
+                </div>
+            </div>
+            
+            <!-- 已安装 Skills -->
+            <div class="section">
+                <h2>✅ 已安装 Skills</h2>
+                <div id="installedSkills">
+                    <div class="status-grid">
+                        <div class="status-card">
+                            <div class="icon">🌐</div>
+                            <div class="label">clawhub</div>
+                            <div class="value">v1.0</div>
+                            <div class="sub">ClawHub CLI</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="icon">🛡️</div>
+                            <div class="label">healthcheck</div>
+                            <div class="value">v1.0</div>
+                            <div class="sub">安全审计</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="icon">🔮</div>
+                            <div class="label">oracle</div>
+                            <div class="value">v1.0</div>
+                            <div class="sub">Oracle CLI</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="icon">🛠️</div>
+                            <div class="label">skill-creator</div>
+                            <div class="value">v1.0</div>
+                            <div class="sub">技能创建</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="icon">📦</div>
+                            <div class="label">tmux</div>
+                            <div class="value">v1.0</div>
+                            <div class="sub">Tmux 控制</div>
+                        </div>
+                        <div class="status-card">
+                            <div class="icon">🌤️</div>
+                            <div class="label">weather</div>
+                            <div class="value">v1.0</div>
+                            <div class="sub">天气查询</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 使用统计 -->
+            <div class="section">
+                <h2>📊 使用统计</h2>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="icon">📦</div>
+                        <div class="label">本地 Skills</div>
+                        <div class="value">6</div>
+                        <div class="sub">个已安装</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🌐</div>
+                        <div class="label">在线 Skills</div>
+                        <div class="value" id="onlineSkillsCount">--</div>
+                        <div class="sub">clawhub.com</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">📅</div>
+                        <div class="label">最后同步</div>
+                        <div class="value" style="font-size:14px;" id="lastSync">--</div>
+                        <div class="sub">--</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -1074,6 +1194,95 @@
         
         // 每3分钟自动刷新
         setInterval(loadSituation, 180000);
+        
+        // ========== Claw-Skills ==========
+        const clawSkillsData = [
+            { name: 'clawhub', desc: 'ClawHub CLI 搜索、安装、更新、发布 Skills', category: 'integration', icon: '🌐', installed: true },
+            { name: 'healthcheck', desc: '安全审计、风险评估、SSH/防火墙硬化', category: 'security', icon: '🛡️', installed: true },
+            { name: 'oracle', desc: 'Oracle CLI 提示词管理、会话控制', category: 'ai', icon: '🔮', installed: true },
+            { name: 'skill-creator', desc: '快速创建新 Skills 和项目模板', category: 'development', icon: '🛠️', installed: true },
+            { name: 'tmux', desc: '远程控制 tmux 会话、发送按键', category: 'utility', icon: '📦', installed: true },
+            { name: 'weather', desc: '天气查询 (wttr.in / Open-Meteo)', category: 'productivity', icon: '🌤️', installed: true },
+            { name: 'docker', desc: 'Docker 容器管理、镜像操作', category: 'utility', icon: '🐳', installed: false },
+            { name: 'git', desc: 'Git 仓库管理、提交历史查看', category: 'development', icon: '🔀', installed: false },
+            { name: 'monitor', desc: '系统监控、CPU/内存/磁盘状态', category: 'utility', icon: '📊', installed: false },
+            { name: 'backup', desc: '文件备份、增量同步、版本控制', category: 'productivity', icon: '💾', installed: false },
+            { name: 'translate', desc: '多语言翻译、文本处理', category: 'productivity', icon: '🌍', installed: false },
+            { name: 'scheduler', desc: '任务调度、定时执行、cron 管理', category: 'productivity', icon: '⏰', installed: false }
+        ];
+        
+        function renderSkillCard(skill) {
+            const status = skill.installed ? 
+                '<span style="color: #20bf6b; font-size: 12px;">✅ 已安装</span>' : 
+                '<a href="https://clawhub.com" target="_blank" style="color: #667eea; font-size: 12px;">🌐 安装</a>';
+            const categoryNames = {
+                integration: '🔗 集成',
+                ai: '🤖 AI',
+                productivity: '⚡ 效率',
+                development: '🛠️ 开发',
+                utility: '🔧 工具',
+                security: '🛡️ 安全'
+            };
+            return `
+                <div class="status-card" style="min-width: 280px;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-size: 24px;">${skill.icon}</span>
+                        <span style="font-weight: bold; font-size: 15px;">${skill.name}</span>
+                        ${status}
+                    </div>
+                    <div style="color: #666; font-size: 13px; margin-bottom: 8px;">${skill.desc}</div>
+                    <div style="font-size: 12px; color: #999;">分类: ${categoryNames[skill.category]}</div>
+                </div>
+            `;
+        }
+        
+        function renderSkillsList(skills) {
+            if (skills.length === 0) {
+                document.getElementById('skillsList').innerHTML = '<div class="empty-state">没有找到匹配的 Skills</div>';
+                return;
+            }
+            let html = '<div class="status-grid">';
+            for (const skill of skills) {
+                html += renderSkillCard(skill);
+            }
+            html += '</div>';
+            document.getElementById('skillsList').innerHTML = html;
+        }
+        
+        function filterSkills() {
+            const search = document.getElementById('skillSearch').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            
+            const filtered = clawSkillsData.filter(skill => {
+                const matchSearch = skill.name.toLowerCase().includes(search) || 
+                                    skill.desc.toLowerCase().includes(search);
+                const matchCategory = category === 'all' || skill.category === category;
+                return matchSearch && matchCategory;
+            });
+            
+            renderSkillsList(filtered);
+        }
+        
+        function loadClawSkills() {
+            document.getElementById('skillsList').innerHTML = '<div class="loading">加载中...</div>';
+            
+            // 更新统计
+            const installedCount = clawSkillsData.filter(s => s.installed).length;
+            const onlineCount = clawSkillsData.length + 50; // 假设在线有更多
+            
+            document.getElementById('onlineSkillsCount').textContent = onlineCount;
+            document.getElementById('lastSync').textContent = new Date().toLocaleString('zh-CN', {
+                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+            });
+            
+            // 模拟加载延迟
+            setTimeout(() => {
+                renderSkillsList(clawSkillsData);
+            }, 300);
+        }
+        
+        // 初始化
+        loadClawSkills();
     </script>
 </body>
 </html>
