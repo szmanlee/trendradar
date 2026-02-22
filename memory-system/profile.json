@@ -1,0 +1,155 @@
+{
+  "user": {
+    "name": "szmanlee",
+    "timezone": "UTC",
+    "channel": "mattermost",
+    "preferences": {
+      "language": "Chinese",
+      "tone": "professional"
+    },
+    "goals": [
+      "persistent-memory",
+      "voice-wakeup",
+      "jarvis-mode"
+    ],
+    "initialized": "2026-02-18",
+    "jarvisMode": {
+      "enabled": true,
+      "tone": "professional-warm",
+      "features": [
+        "proactive-reminder",
+        "auto-summary",
+        "task-optimization"
+      ],
+      "brevity": "high",
+      "initTime": "2026-02-18T05:18:00Z"
+    }
+  },
+  "agent": {},
+  "habits": {},
+  "preferences": {
+    "likes": [
+      "简洁的回复",
+      "啰嗦",
+      "喜欢",
+      "详细的技术文档"
+    ],
+    "dislikes": [
+      "简洁的回复",
+      "啰嗦"
+    ],
+    "habits": []
+  },
+  "metadata": {
+    "created": "2026-02-18T04:36:51.664Z",
+    "version": "1.0.0"
+  },
+  "learned": [
+    {
+      "extractedAt": "2026-02-18T04:39:48.644Z",
+      "likes": [],
+      "dislikes": [
+        "简洁的回复"
+      ],
+      "habits": [],
+      "goals": [
+        "喜欢简洁的回复"
+      ],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:48:19.287Z",
+      "likes": [],
+      "dislikes": [],
+      "habits": [],
+      "goals": [
+        "喜欢简洁的回复"
+      ],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:54:03.193Z",
+      "likes": [],
+      "dislikes": [],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:54:28.006Z",
+      "likes": [
+        "简洁的回复",
+        "啰嗦"
+      ],
+      "dislikes": [
+        "啰嗦"
+      ],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:54:50.438Z",
+      "likes": [
+        "喜欢",
+        "喜欢"
+      ],
+      "dislikes": [
+        "啰嗦"
+      ],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:55:08.681Z",
+      "likes": [
+        "简洁的回复"
+      ],
+      "dislikes": [],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:55:08.685Z",
+      "likes": [
+        "详细的技术文档"
+      ],
+      "dislikes": [],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T04:59:29.639Z",
+      "likes": [
+        "简洁的回复"
+      ],
+      "dislikes": [],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T05:12:03.808Z",
+      "likes": [
+        "简洁的回复"
+      ],
+      "dislikes": [
+        "啰嗦"
+      ],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    },
+    {
+      "extractedAt": "2026-02-18T05:17:04.606Z",
+      "likes": [],
+      "dislikes": [],
+      "habits": [],
+      "goals": [],
+      "stylePrefs": []
+    }
+  ]
+}

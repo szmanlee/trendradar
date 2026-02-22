@@ -1,0 +1,187 @@
+# TrendRadar 配置文件
+# v6.0.0
+
+app:
+  # 应用名称
+  name: TrendRadar
+  # 时区设置
+  timezone: Asia/Shanghai
+
+# 推送配置
+report:
+  # 推送标题
+  title: 📊 每日热点速递
+  # 显示模式：keyword(按关键词) 或 platform(按平台)
+  display_mode: keyword
+  # 显示区域配置
+  display:
+    # 区域显示顺序
+    region_order:
+      - trending
+      - new
+      - rss
+      - standalone
+      - ai_analysis
+    # 区域显示开关
+    regions:
+      trending: true      # 热榜新闻
+      new: true           # 本次新增
+      rss: true           # RSS订阅
+      standalone: true    # 独立展示区
+      ai_analysis: false  # AI分析（需要AI配置）
+  # 独立展示区配置
+  standalone:
+    enabled: false
+    platforms: []
+    rss_feeds: []
+    max_items: 10
+
+# 通知渠道配置
+notification:
+  # 邮件通知（可选）
+  email:
+    enabled: false
+    smtp_host: smtp.example.com
+    smtp_port: 587
+    smtp_user: your_email@example.com
+    smtp_password: your_password
+    to:
+      - recipient@example.com
+    use_tls: true
+
+  # Telegram（可选）
+  telegram:
+    enabled: false
+    token: ""
+    chat_id: ""
+
+  # 飞书（可选）
+  feishu:
+    enabled: false
+    webhook_url: ""
+
+  # 钉钉（可选）
+  dingtalk:
+    enabled: false
+    access_token: ""
+    keyword: ""
+
+  # 企业微信（可选）
+  wechatwork:
+    enabled: false
+    key: ""
+
+  # QQ（可选）- 使用 OpenClaw QQ Bot
+  qq:
+    enabled: true
+    bot_token: "Khtth3CtVdvpWWt1cA7uwwzPVShMl4B4"
+    channel_id: ""
+
+# 存储配置
+storage:
+  # 输出格式配置
+  formats:
+    sqlite: true    # SQLite 数据库
+    txt: true       # TXT 文本
+    html: true      # HTML 报告（Web 界面必需）
+  # 本地SQLite
+  local:
+    enabled: true
+    path: data
+  # S3远程存储（可选）
+  s3:
+    enabled: false
+    endpoint_url: ""
+    bucket: trendradar
+    region: us-east-1
+    access_key: ""
+    secret_key: ""
+    prefix: ""
+
+# 平台配置
+platforms:
+  # 微博热搜（默认启用）
+  weibo:
+    enabled: true
+    code: weibo
+    display_name: 微博
+    url: https://weibo.com/ajax/statuses/mymblog
+  # 知乎热搜（默认启用）
+  zhihu:
+    enabled: true
+    code: zhihu
+    display_name: 知乎
+    url: https://www.zhihu.com/api/v3/feed/topstory/hot-list
+  # 哔哩哔哩（默认启用）
+  bilibili:
+    enabled: true
+    code: bilibili
+    display_name: B站
+    url: https://api.bilibili.com/x/web-interface/ranking/v2
+  # 抖音热搜（默认启用）
+  douyin:
+    enabled: true
+    code: douyin
+    display_name: 抖音
+    url: https://www.douyin.com/aweme/v1/web/hot/search/list
+  # 今日头条（默认启用）
+  toutiao:
+    enabled: true
+    code: toutiao
+    display_name: 头条
+    url: https://www.toutiao.com/api/pc/feed
+  # 虎扑（默认启用）
+  hupu:
+    enabled: true
+    code: hupu
+    display_name: 虎扑
+    url: https://m.hupu.com/api/bbs/topic/rank
+  # 百度贴吧（默认启用）
+  tieba:
+    enabled: true
+    code: tieba
+    display_name: 百度贴吧
+    url: https://tieba.baidu.com/f/sign/json/frsbid
+  # 什么值得买（默认启用）
+  smzdm:
+    enabled: true
+    code: smzdm
+    display_name: 什么值得买
+    url: https://www.smzdm.com/json
+  # 小红书（默认启用）
+  xiaohongshu:
+    enabled: true
+    code: xiaohongshu
+    display_name: 小红书
+    url: https://www.xiaohongshu.com/api/snshell/v1/hot/recommend
+  # 快手热搜（默认启用）
+  kuaishou:
+    enabled: true
+    code: kuaishou
+    display_name: 快手
+    url: https://www.kuaishou.com/activity/hot-search
+
+# RSS订阅配置
+rss:
+  enabled: false
+  feeds: []
+  # 示例：
+  # feeds:
+  #   - url: https://rsshub.app/dribbble/popular
+  #     name: Dribbble
+  #     keywords: []
+
+# 高级配置
+advanced:
+  # 关键词过滤文件
+  keywords_file: config/frequency_words.txt
+  # AI分析提示词文件
+  ai_prompt_file: config/ai_analysis_prompt.txt
+  # 最大并发数
+  max_concurrent: 5
+  # 请求超时（秒）
+  request_timeout: 30
+  # 重试次数
+  max_retries: 3
+  # 重试间隔（秒）
+  retry_delay: 5

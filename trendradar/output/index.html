@@ -152,8 +152,7 @@
             <button class="nav-tab" onclick="showTab('workflow')">📋 工作规范</button>
             <button class="nav-tab" onclick="showTab('trendradar')">📊 TrendRadar</button>
             <button class="nav-tab" onclick="showTab('hot')">🔥 实时热点</button>
-            <button class="nav-tab" onclick="showTab('news')">📰 新闻摘要</button>
-        <button class="nav-tab" onclick="showTab('situation')">📡 局势监控</button>
+        <button class="nav-tab active" onclick="showTab('situation')">📡 局势监控</button>
         </div>
         
         <!-- 首页 -->
@@ -482,56 +481,33 @@
             </div>
         </div>
 
-        <!-- 新闻摘要 -->
-        <div id="news" class="tab-content">
-            <div class="section">
-                <h2>📰 实时新闻摘要 <button class="refresh-btn" onclick="loadNews()">🔄 刷新</button></h2>
-                <div class="category-nav">
-                    <button class="category-btn active" data-category="all">全部</button>
-                    <button class="category-btn" data-category="tech">科技</button>
-                    <button class="category-btn" data-category="finance">财经</button>
-                    <button class="category-btn" data-category="entertainment">娱乐</button>
-                    <button class="category-btn" data-category="sports">体育</button>
-                    <button class="category-btn" data-category="social">社会</button>
-                </div>
-                <div id="newsList"><div class="loading">加载中...</div></div>
-            </div>
-
-            <div class="section">
-                <h2>📊 新闻统计</h2>
-                <div class="status-grid">
-                    <div class="status-card">
-                        <div class="icon">📰</div>
-                        <div class="label">今日新闻</div>
-                        <div class="value" id="todayNewsCount">0</div>
-                        <div class="sub">条</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🏷️</div>
-                        <div class="label">已分类</div>
-                        <div class="value" id="categorizedCount">0</div>
-                        <div class="sub">条</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">📅</div>
-                        <div class="label">最后更新</div>
-                        <div class="value" id="lastUpdate" style="font-size:14px;">--</div>
-                        <div class="sub">--</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🔗</div>
-                        <div class="label">数据来源</div>
-                        <div class="value" style="font-size:14px;">TrendRadar</div>
-                        <div class="sub">抓取中</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 局势监控 -->
+<!-- 新闻摘要已合并到局势监控 -->        <!-- 局势监控 -->
         <div id="situation" class="tab-content">
+            <!-- situation-monitor 部署状态 -->
             <div class="section">
                 <h2>📡 局势监控 <button class="refresh-btn" onclick="loadSituation()">🔄 刷新</button></h2>
+                
+                <!-- 部署状态 -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 20px; color: white; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                        <div style="flex: 1; min-width: 120px;">
+                            <div style="font-size: 13px; opacity: 0.9;">🔗 服务地址</div>
+                            <div style="font-size: 16px; font-weight: bold;">192.168.32.26:4173</div>
+                        </div>
+                        <div style="flex: 1; min-width: 120px;">
+                            <div style="font-size: 13px; opacity: 0.9;">🟢 运行状态</div>
+                            <div style="font-size: 16px; font-weight: bold;">已部署</div>
+                        </div>
+                        <div style="flex: 1; min-width: 120px;">
+                            <div style="font-size: 13px; opacity: 0.9;">📊 监控指标</div>
+                            <div style="font-size: 16px; font-weight: bold;">6 类</div>
+                        </div>
+                        <div style="flex: 1; min-width: 120px;">
+                            <div style="font-size: 13px; opacity: 0.9;">🔄 更新间隔</div>
+                            <div style="font-size: 16px; font-weight: bold;">5 分钟</div>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- 筛选器 -->
                 <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
@@ -573,6 +549,20 @@
                 <div id="situationData"><div class="loading">加载中...</div></div>
             </div>
             
+            <!-- 实时新闻摘要 -->
+            <div class="section">
+                <h2>📰 实时新闻摘要 <button class="refresh-btn" onclick="loadNews()">🔄 刷新</button></h2>
+                <div class="category-nav">
+                    <button class="category-btn active" data-category="all">全部</button>
+                    <button class="category-btn" data-category="tech">科技</button>
+                    <button class="category-btn" data-category="finance">财经</button>
+                    <button class="category-btn" data-category="entertainment">娱乐</button>
+                    <button class="category-btn" data-category="sports">体育</button>
+                    <button class="category-btn" data-category="social">社会</button>
+                </div>
+                <div id="newsList"><div class="loading">加载中...</div></div>
+            </div>
+            
             <!-- 统计面板 -->
             <div class="section">
                 <h2>📊 数据统计</h2>
@@ -600,6 +590,28 @@
                         <div class="label">最后更新</div>
                         <div class="value" id="situationUpdate" style="font-size:14px;">--</div>
                         <div class="sub">--</div>
+                    </div>
+                </div>
+                
+                <!-- 新闻统计 -->
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #eee;">
+                    <h3 style="font-size: 13px; color: #666; margin-bottom: 10px;">📰 新闻统计</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 80px; background: #f0f7ff; border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold; color: #667eea;">📰</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #333;" id="todayNewsCount">0</div>
+                            <div style="font-size: 11px; color: #999;">今日新闻</div>
+                        </div>
+                        <div style="flex: 1; min-width: 80px; background: #f0fff4; border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold; color: #20bf6b;">🏷️</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #333;" id="categorizedCount">0</div>
+                            <div style="font-size: 11px; color: #999;">已分类</div>
+                        </div>
+                        <div style="flex: 1; min-width: 80px; background: #fff8f0; border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold; color: #ffa502;">🔗</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #333;">TrendRadar</div>
+                            <div style="font-size: 11px; color: #999;">数据来源</div>
+                        </div>
                     </div>
                 </div>
                 

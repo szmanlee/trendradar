@@ -1,0 +1,11 @@
+# Situation Monitor 数据采集 - Cron 配置
+# 将以下内容添加到 crontab (crontab -e)
+
+# 每5分钟获取一次局势监控数据
+*/5 * * * * /bin/bash /root/.openclaw/workspace/trendradar/scripts/fetch-situation.sh >> /var/log/situation-monitor.log 2>&1
+
+# 手动测试命令：
+# /bin/bash /root/.openclaw/workspace/trendradar/scripts/fetch-situation.sh
+
+# 查看日志：
+# tail -f /var/log/situation-monitor.log

@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "created": "2026-02-18T04:36:00Z",
+  "storage": {
+    "type": "local",
+    "basePath": "/root/.openclaw/workspace/memory-system",
+    "backupEnabled": true,
+    "backupIntervalHours": 24
+  },
+  "features": {
+    "autoRecord": true,
+    "autoLearn": true,
+    "autoProfile": true,
+    "persistHistory": true,
+    "extractPreferences": true
+  }
+}

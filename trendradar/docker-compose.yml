@@ -1,0 +1,39 @@
+services:
+  trendradar:
+    image: wantcat/trendradar:latest
+    container_name: trendradar
+    restart: unless-stopped
+    ports:
+      - "6080:6080"
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config
+      - ./output:/app/output
+    environment:
+      - TZ=Asia/Shanghai
+      - RUN_MODE=cron
+      - ENABLE_WEBSERVER=true
+      - WEB_SERVER_HOST=0.0.0.0
+      - WEB_SERVER_PORT=8080
+      - HTTP_PROXY=http://127.0.0.1:1081
+      - HTTPS_PROXY=http://127.0.0.1:1081
+      - ALL_PROXY=socks5://127.0.0.1:1080
+      # AI 分析配置（可选）
+      # - AI_API_KEY=your_api_key
+      # - AI_MODEL=deepseek/deepseek-chat
+
+  # 可选：MCP 服务
+  # trendradar-mcp:
+  #   image: wantcat/trendradar-mcp
+  #   container_name: trendradar-mcp
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3333:3333"
+  #   volumes:
+  #     - ./data:/app/data
+  #     - ./config:/app/config
+  #   environment:
+  #     - TZ=Asia/Shanghai
+  #     - AI_API_KEY=${AI_API_KEY:-}
+  #     - AI_MODEL=${AI_MODEL:-deepseek/deepseek-chat}
