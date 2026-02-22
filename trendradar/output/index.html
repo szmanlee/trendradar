@@ -464,25 +464,11 @@
             <div class="section">
                 <h2>🦞 Claw-Skills <button class="refresh-btn" onclick="loadClawSkills()">🔄 刷新</button></h2>
                 <p style="color: #666; font-size: 13px; margin-bottom: 20px;">
-                    Awesome OpenClaw Skills 来自 clawhub.com，是 OpenClaw 生态系统的核心扩展能力
+                    <a href="https://github.com/voltagent/awesome-openclaw-skills" target="_blank" style="color: #667eea;">awesome-openclaw-skills</a> 
+                    收录 3002+ 社区 Skills，按功能分类整理
                 </p>
                 
-                <!-- 搜索框 -->
-                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input type="text" id="skillSearch" placeholder="搜索 Skills..." 
-                           style="flex: 1; padding: 10px 15px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;"
-                           onkeyup="filterSkills()">
-                    <select id="categoryFilter" onchange="filterSkills()" style="padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-size: 14px;">
-                        <option value="all">全部分类</option>
-                        <option value="integration">🔗 集成</option>
-                        <option value="ai">🤖 AI</option>
-                        <option value="productivity">⚡ 效率</option>
-                        <option value="development">🛠️ 开发</option>
-                        <option value="utility">🔧 工具</option>
-                    </select>
-                </div>
-                
-                <!-- 分类快捷入口 -->
+                <!-- 快捷链接 -->
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
                     <a href="https://clawhub.com" target="_blank" style="text-decoration: none;">
                         <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;">
@@ -491,89 +477,104 @@
                     </a>
                     <a href="https://docs.openclaw.ai" target="_blank" style="text-decoration: none;">
                         <span style="background: #333; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;">
-                            📖 OpenClaw 文档
+                            📖 官方文档
                         </span>
                     </a>
-                    <a href="https://github.com/openclaw/openclaw" target="_blank" style="text-decoration: none;">
+                    <a href="https://github.com/openclaw/skills" target="_blank" style="text-decoration: none;">
                         <span style="background: #24292e; color: white; padding: 8px 16px; border-radius: 20px; font-size: 13px;">
-                            💻 GitHub
+                            💻 官方 Skills
                         </span>
                     </a>
                 </div>
                 
-                <!-- Skills 列表 -->
-                <div id="skillsList">
+                <!-- 分类筛选 -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <select id="clawCategoryFilter" onchange="filterClawSkills()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 13px;">
+                        <option value="all">全部分类</option>
+                        <option value="coding">💻 编码 & IDE</option>
+                        <option value="ai">🤖 AI & LLMs</option>
+                        <option value="devops">☁️ DevOps & Cloud</option>
+                        <option value="web">🌐 Web 开发</option>
+                        <option value="productivity">⚡ 效率工具</option>
+                        <option value="automation">🔄 自动化</option>
+                        <option value="security">🛡️ 安全</option>
+                        <option value="communication">💬 通信</option>
+                        <option value="media">📺 媒体</option>
+                        <option value="research">🔍 搜索 & 研究</option>
+                    </select>
+                    <input type="text" id="clawSkillSearch" placeholder="搜索 Skills..." 
+                           style="flex: 1; min-width: 200px; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 13px;"
+                           onkeyup="filterClawSkills()">
+                </div>
+                
+                <!-- Skills 统计条 -->
+                <div style="background: linear-gradient(135deg, #f5f7fa, #c3cfe2); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                        <div><span style="font-size: 24px; font-weight: bold; color: #667eea;">3002+</span><span style="color: #666; font-size: 13px;"> 社区 Skills</span></div>
+                        <div><span style="font-size: 24px; font-weight: bold; color: #20bf6b;">28</span><span style="color: #666; font-size: 13px;"> 分类</span></div>
+                        <div><span style="font-size: 24px; font-weight: bold; color: #f55353;">5705</span><span style="color: #666; font-size: 13px;"> ClawHub 注册</span></div>
+                    </div>
+                </div>
+                
+                <!-- Skills 列表容器 -->
+                <div id="clawSkillsList">
                     <div class="loading">加载中...</div>
                 </div>
             </div>
             
             <!-- 已安装 Skills -->
             <div class="section">
-                <h2>✅ 已安装 Skills</h2>
-                <div id="installedSkills">
-                    <div class="status-grid">
-                        <div class="status-card">
-                            <div class="icon">🌐</div>
-                            <div class="label">clawhub</div>
-                            <div class="value">v1.0</div>
-                            <div class="sub">ClawHub CLI</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="icon">🛡️</div>
-                            <div class="label">healthcheck</div>
-                            <div class="value">v1.0</div>
-                            <div class="sub">安全审计</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="icon">🔮</div>
-                            <div class="label">oracle</div>
-                            <div class="value">v1.0</div>
-                            <div class="sub">Oracle CLI</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="icon">🛠️</div>
-                            <div class="label">skill-creator</div>
-                            <div class="value">v1.0</div>
-                            <div class="sub">技能创建</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="icon">📦</div>
-                            <div class="label">tmux</div>
-                            <div class="value">v1.0</div>
-                            <div class="sub">Tmux 控制</div>
-                        </div>
-                        <div class="status-card">
-                            <div class="icon">🌤️</div>
-                            <div class="label">weather</div>
-                            <div class="value">v1.0</div>
-                            <div class="sub">天气查询</div>
-                        </div>
+                <h2>✅ 本地已安装 Skills</h2>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="icon">🌐</div>
+                        <div class="label">clawhub</div>
+                        <div class="value">v1.0</div>
+                        <div class="sub">ClawHub CLI</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🛡️</div>
+                        <div class="label">healthcheck</div>
+                        <div class="value">v1.0</div>
+                        <div class="sub">安全审计</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🔮</div>
+                        <div class="label">oracle</div>
+                        <div class="value">v1.0</div>
+                        <div class="sub">Oracle CLI</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🛠️</div>
+                        <div class="label">skill-creator</div>
+                        <div class="value">v1.0</div>
+                        <div class="sub">技能创建</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">📦</div>
+                        <div class="label">tmux</div>
+                        <div class="value">v1.0</div>
+                        <div class="sub">Tmux 控制</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🌤️</div>
+                        <div class="label">weather</div>
+                        <div class="value">v1.0</div>
+                        <div class="sub">天气查询</div>
                     </div>
                 </div>
             </div>
             
-            <!-- 使用统计 -->
+            <!-- 安装说明 -->
             <div class="section">
-                <h2>📊 使用统计</h2>
-                <div class="status-grid">
-                    <div class="status-card">
-                        <div class="icon">📦</div>
-                        <div class="label">本地 Skills</div>
-                        <div class="value">6</div>
-                        <div class="sub">个已安装</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🌐</div>
-                        <div class="label">在线 Skills</div>
-                        <div class="value" id="onlineSkillsCount">--</div>
-                        <div class="sub">clawhub.com</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">📅</div>
-                        <div class="label">最后同步</div>
-                        <div class="value" style="font-size:14px;" id="lastSync">--</div>
-                        <div class="sub">--</div>
-                    </div>
+                <h2>📦 安装新 Skills</h2>
+                <div class="config-table">
+                    <table>
+                        <tr><th style="width: 120px;">方式</th><th>命令 / 说明</th></tr>
+                        <tr><td>ClawHub CLI</td><td><code style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px;">npx clawhub@latest install &lt;skill-slug&gt;</code></td></tr>
+                        <tr><td>手动安装</td><td>复制 skill 文件夹到 <code>~/.openclaw/skills/</code> 或项目 <code>skills/</code> 目录</td></tr>
+                        <tr><td>粘贴链接</td><td>直接粘贴 GitHub 仓库链接到对话，助手自动处理</td></tr>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1196,89 +1197,135 @@
         setInterval(loadSituation, 180000);
         
         // ========== Claw-Skills ==========
-        const clawSkillsData = [
-            { name: 'clawhub', desc: 'ClawHub CLI 搜索、安装、更新、发布 Skills', category: 'integration', icon: '🌐', installed: true },
-            { name: 'healthcheck', desc: '安全审计、风险评估、SSH/防火墙硬化', category: 'security', icon: '🛡️', installed: true },
-            { name: 'oracle', desc: 'Oracle CLI 提示词管理、会话控制', category: 'ai', icon: '🔮', installed: true },
-            { name: 'skill-creator', desc: '快速创建新 Skills 和项目模板', category: 'development', icon: '🛠️', installed: true },
-            { name: 'tmux', desc: '远程控制 tmux 会话、发送按键', category: 'utility', icon: '📦', installed: true },
-            { name: 'weather', desc: '天气查询 (wttr.in / Open-Meteo)', category: 'productivity', icon: '🌤️', installed: true },
-            { name: 'docker', desc: 'Docker 容器管理、镜像操作', category: 'utility', icon: '🐳', installed: false },
-            { name: 'git', desc: 'Git 仓库管理、提交历史查看', category: 'development', icon: '🔀', installed: false },
-            { name: 'monitor', desc: '系统监控、CPU/内存/磁盘状态', category: 'utility', icon: '📊', installed: false },
-            { name: 'backup', desc: '文件备份、增量同步、版本控制', category: 'productivity', icon: '💾', installed: false },
-            { name: 'translate', desc: '多语言翻译、文本处理', category: 'productivity', icon: '🌍', installed: false },
-            { name: 'scheduler', desc: '任务调度、定时执行、cron 管理', category: 'productivity', icon: '⏰', installed: false }
+        // 数据来源: https://github.com/voltagent/awesome-openclaw-skills
+        const awesomeSkillsData = [
+            // 💻 Coding & IDE
+            { name: 'cursor', desc: 'Cursor AI IDE - 智能代码编辑器', category: 'coding', icon: '🖥️', url: 'https://cursor.sh' },
+            { name: 'cline', desc: 'Cline - VS Code AI 编程助手', category: 'coding', icon: '📝', url: 'https://github.com/cline/cline' },
+            { name: 'continue', desc: 'Continue - 开源 AI 编程助手', category: 'coding', icon: '➡️', url: 'https://github.com/continuedev/continue' },
+            { name: 'devin', desc: 'Devin - Cognition AI 全栈工程师', category: 'coding', icon: '🤖', url: 'https://cognition.ai' },
+            { name: 'aider', desc: 'Aider - AI 配对编程工具', category: 'coding', icon: '👥', url: 'https://aider.chat' },
+            { name: 'v0', desc: 'v0 - Vercel AI UI 生成器', category: 'coding', icon: '🎨', url: 'https://v0.dev' },
+            
+            // 🤖 AI & LLMs
+            { name: 'openai', desc: 'OpenAI - GPT-4/Claude 等大模型', category: 'ai', icon: '🧠', url: 'https://openai.com' },
+            { name: 'anthropic', desc: 'Anthropic - Claude AI 助手', category: 'ai', icon: '🧬', url: 'https://anthropic.com' },
+            { name: 'ollama', desc: 'Ollama - 本地大模型运行', category: 'ai', icon: '🏠', url: 'https://ollama.com' },
+            { name: 'lm-studio', desc: 'LM Studio - 本地 GUI 管理 LLM', category: 'ai', icon: '📦', url: 'https://lmstudio.ai' },
+            { name: 'groq', desc: 'Groq - 高速推理服务', category: 'ai', icon: '⚡', url: 'https://groq.com' },
+            { name: 'deepseek', desc: 'DeepSeek - 开源大模型', category: 'ai', icon: '🔮', url: 'https://deepseek.com' },
+            { name: 'perplexity', desc: 'Perplexity - AI 搜索引擎', category: 'ai', icon: '🔍', url: 'https://perplexity.ai' },
+            
+            // ☁️ DevOps & Cloud
+            { name: 'docker', desc: 'Docker - 容器化平台', category: 'devops', icon: '🐳', url: 'https://docker.com' },
+            { name: 'kubernetes', desc: 'Kubernetes - 容器编排', category: 'devops', icon: '⚓', url: 'https://kubernetes.io' },
+            { name: 'terraform', desc: 'Terraform - 基础设施即代码', category: 'devops', icon: '🏗️', url: 'https://terraform.io' },
+            { name: 'github-actions', desc: 'GitHub Actions - CI/CD 自动化', category: 'devops', icon: '🔄', url: 'https://github.com/features/actions' },
+            { name: 'vercel', desc: 'Vercel - 部署平台', category: 'devops', icon: '▲', url: 'https://vercel.com' },
+            { name: 'cloudflare', desc: 'Cloudflare - CDN/安全/DNS', category: 'devops', icon: '☁️', url: 'https://cloudflare.com' },
+            
+            // 🌐 Web 开发
+            { name: 'nextjs', desc: 'Next.js - React 全栈框架', category: 'web', icon: '▲', url: 'https://nextjs.org' },
+            { name: 'react', desc: 'React - UI 组件库', category: 'web', icon: '⚛️', url: 'https://react.dev' },
+            { name: 'vue', desc: 'Vue.js - 渐进式框架', category: 'web', icon: '💚', url: 'https://vuejs.org' },
+            { name: 'tailwind', desc: 'Tailwind CSS - 原子化 CSS', category: 'web', icon: '🎯', url: 'https://tailwindcss.com' },
+            { name: 'shadcn', desc: 'shadcn/ui - 可复用的 UI 组件', category: 'web', icon: '🎨', url: 'https://ui.shadcn.com' },
+            
+            // ⚡ 效率工具
+            { name: 'raycast', desc: 'Raycast - Mac 效率启动器', category: 'productivity', icon: '🚀', url: 'https://raycast.com' },
+            { name: 'alfred', desc: 'Alfred - Mac 效率工具', category: 'productivity', icon: '🔮', url: 'https://alfredapp.com' },
+            { name: 'notion', desc: 'Notion - 知识管理/笔记', category: 'productivity', icon: '📝', url: 'https://notion.so' },
+            { name: 'obsidian', desc: 'Obsidian - Markdown 笔记', category: 'productivity', icon: '📎', url: 'https://obsidian.md' },
+            { name: 'n8n', desc: 'n8n - 工作流自动化', category: 'productivity', icon: '🔗', url: 'https://n8n.io' },
+            
+            // 🔄 自动化
+            { name: 'nodered', desc: 'Node-RED - 流程可视化', category: 'automation', icon: '🟢', url: 'https://nodered.org' },
+            { name: 'home-assistant', desc: 'Home Assistant - 智能家居', category: 'automation', icon: '🏠', url: 'https://home-assistant.io' },
+            { name: 'make', desc: 'Make/Integromat - 自动化平台', category: 'automation', icon: '⚙️', url: 'https://make.com' },
+            { name: 'zapier', desc: 'Zapier - 应用集成', category: 'automation', icon: '⚡', url: 'https://zapier.com' },
+            
+            // 🛡️ 安全
+            { name: 'wazuh', desc: 'Wazuh - 开源安全监控', category: 'security', icon: '🛡️', url: 'https://wazuh.com' },
+            { name: 'crowdsec', desc: 'CrowdSec - 社区驱动安全', category: 'security', icon: '👥', url: 'https://crowdsec.net' },
+            { name: 'fail2ban', desc: 'Fail2ban - SSH 防护', category: 'security', icon: '🚫', url: 'https://www.fail2ban.org' },
+            
+            // 💬 通信
+            { name: 'discord', desc: 'Discord - 社区/游戏聊天', category: 'communication', icon: '🎮', url: 'https://discord.com' },
+            { name: 'slack', desc: 'Slack - 团队协作', category: 'communication', icon: '💬', url: 'https://slack.com' },
+            { name: 'telegram', desc: 'Telegram - 即时通讯', category: 'communication', icon: '✈️', url: 'https://telegram.org' },
+            
+            // 📺 媒体
+            { name: 'jellyfin', desc: 'Jellyfin - 自媒体服务器', category: 'media', icon: '🍿', url: 'https://jellyfin.org' },
+            { name: 'plex', desc: 'Plex - 媒体流媒体', category: 'media', icon: '📺', url: 'https://plex.tv' },
+            { name: 'emby', desc: 'Emby - 媒体服务器', category: 'media', icon: '🎬', url: 'https://emby.media' },
+            
+            // 🔍 搜索 & 研究
+            { name: 'brave-search', desc: 'Brave Search - 隐私搜索', category: 'research', icon: '🦁', url: 'https://search.brave.com' },
+            { name: 'searxng', desc: 'SearXNG - 元搜索引擎', category: 'research', icon: '🔎', url: 'https://github.com/searxng/searxng' },
+            { name: 'yacy', desc: 'YaCy - 分布式 P2P 搜索', category: 'research', icon: '🌐', url: 'https://yacy.net' }
         ];
         
-        function renderSkillCard(skill) {
-            const status = skill.installed ? 
-                '<span style="color: #20bf6b; font-size: 12px;">✅ 已安装</span>' : 
-                '<a href="https://clawhub.com" target="_blank" style="color: #667eea; font-size: 12px;">🌐 安装</a>';
+        function renderAwesomeSkillCard(skill) {
             const categoryNames = {
-                integration: '🔗 集成',
+                coding: '💻 编码',
                 ai: '🤖 AI',
+                devops: '☁️ DevOps',
+                web: '🌐 Web',
                 productivity: '⚡ 效率',
-                development: '🛠️ 开发',
-                utility: '🔧 工具',
-                security: '🛡️ 安全'
+                automation: '🔄 自动化',
+                security: '🛡️ 安全',
+                communication: '💬 通信',
+                media: '📺 媒体',
+                research: '🔍 搜索'
             };
             return `
-                <div class="status-card" style="min-width: 280px;">
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <span style="font-size: 24px;">${skill.icon}</span>
-                        <span style="font-weight: bold; font-size: 15px;">${skill.name}</span>
-                        ${status}
+                <div class="status-card" style="min-width: 300px; cursor: pointer;" 
+                     onclick="window.open('${skill.url}', '_blank')"
+                     title="点击访问">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <span style="font-size: 28px;">${skill.icon}</span>
+                        <span style="font-weight: bold; font-size: 16px; color: #333;">${skill.name}</span>
+                        <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; margin-left: auto;">
+                            ${categoryNames[skill.category]}
+                        </span>
                     </div>
-                    <div style="color: #666; font-size: 13px; margin-bottom: 8px;">${skill.desc}</div>
-                    <div style="font-size: 12px; color: #999;">分类: ${categoryNames[skill.category]}</div>
+                    <div style="color: #666; font-size: 13px; line-height: 1.5;">${skill.desc}</div>
+                    <div style="color: #667eea; font-size: 12px; margin-top: 8px;">🔗 ${skill.url}</div>
                 </div>
             `;
         }
         
-        function renderSkillsList(skills) {
-            if (skills.length === 0) {
-                document.getElementById('skillsList').innerHTML = '<div class="empty-state">没有找到匹配的 Skills</div>';
-                return;
-            }
-            let html = '<div class="status-grid">';
-            for (const skill of skills) {
-                html += renderSkillCard(skill);
-            }
-            html += '</div>';
-            document.getElementById('skillsList').innerHTML = html;
-        }
-        
-        function filterSkills() {
-            const search = document.getElementById('skillSearch').value.toLowerCase();
-            const category = document.getElementById('categoryFilter').value;
+        function filterClawSkills() {
+            const search = document.getElementById('clawSkillSearch').value.toLowerCase();
+            const category = document.getElementById('clawCategoryFilter').value;
             
-            const filtered = clawSkillsData.filter(skill => {
+            const filtered = awesomeSkillsData.filter(skill => {
                 const matchSearch = skill.name.toLowerCase().includes(search) || 
                                     skill.desc.toLowerCase().includes(search);
                 const matchCategory = category === 'all' || skill.category === category;
                 return matchSearch && matchCategory;
             });
             
-            renderSkillsList(filtered);
+            // 渲染
+            let html = '<div class="status-grid">';
+            for (const skill of filtered) {
+                html += renderAwesomeSkillCard(skill);
+            }
+            html += '</div>';
+            
+            // 如果没有匹配的
+            if (filtered.length === 0) {
+                html = '<div class="empty-state" style="text-align: center; padding: 40px; color: #666;">没有找到匹配的 Skills</div>';
+            }
+            
+            document.getElementById('clawSkillsList').innerHTML = html;
         }
         
         function loadClawSkills() {
-            document.getElementById('skillsList').innerHTML = '<div class="loading">加载中...</div>';
-            
-            // 更新统计
-            const installedCount = clawSkillsData.filter(s => s.installed).length;
-            const onlineCount = clawSkillsData.length + 50; // 假设在线有更多
-            
-            document.getElementById('onlineSkillsCount').textContent = onlineCount;
-            document.getElementById('lastSync').textContent = new Date().toLocaleString('zh-CN', {
-                month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-            });
-            
-            // 模拟加载延迟
+            document.getElementById('clawSkillsList').innerHTML = '<div class="loading">加载中...</div>';
             setTimeout(() => {
-                renderSkillsList(clawSkillsData);
-            }, 300);
+                filterClawSkills();
+            }, 200);
         }
         
         // 初始化
