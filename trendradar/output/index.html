@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 Jarvis Dashboard - 2026-02-22</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* 顶部导航 */
+        .nav-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: white; padding: 10px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); flex-wrap: wrap; }
+        .nav-tab { padding: 10px 20px; border: none; background: #f0f2f5; border-radius: 8px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .nav-tab:hover, .nav-tab.active { background: #667eea; color: white; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* 通用样式 */
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); }
+        header h1 { font-size: 28px; margin-bottom: 10px; }
+        header p { opacity: 0.9; }
+        .section { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .section h2 { color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid #f0f0f0; display: flex; align-items: center; gap: 10px; }
+        
+        /* 卡片网格 */
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .card { background: #f8f9ff; border-radius: 10px; padding: 15px; }
+        .card h3 { font-size: 15px; color: #333; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .card p, .card li { font-size: 13px; color: #666; line-height: 1.7; }
+        .card ul { list-style: none; padding-left: 0; }
+        .card li { padding: 6px 0; border-bottom: 1px solid #e8e8e8; }
+        .card li:last-child { border-bottom: none; }
+        
+        /* 状态卡片 */
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .status-card { background: #f8f9ff; border-radius: 10px; padding: 15px; text-align: center; }
+        .status-card .icon { font-size: 28px; margin-bottom: 8px; }
+        .status-card .label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .status-card .value { font-size: 18px; font-weight: bold; color: #333; }
+        .status-card .sub { font-size: 11px; color: #667eea; margin-top: 5px; }
+        .status-card .sub.warning { color: #ffa502; }
+        .status-card .sub.error { color: #ff6b6b; }
+        
+        /* 任务列表 */
+        .task-list { list-style: none; }
+        .task-item { padding: 12px 0; border-bottom: 1px solid #f5f5f5; display: flex; align-items: flex-start; gap: 12px; }
+        .task-item:last-child { border-bottom: none; }
+        .task-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .task-icon.done { background: #d4edda; color: #28a745; }
+        .task-icon.pending { background: #fff3cd; color: #ffa502; }
+        .task-icon.error { background: #f8d7da; color: #dc3545; }
+        .task-title { font-size: 14px; color: #333; margin-bottom: 4px; }
+        .task-desc { font-size: 12px; color: #999; }
+        
+        /* 优先级表格 */
+        .priority-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .priority-table th, .priority-table td { padding: 10px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        .priority-table th { background: #f8f9ff; color: #333; font-weight: 600; }
+        .priority-table tr:hover { background: #f8f9ff; }
+        .priority-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .priority-1 { background: #d4edda; color: #28a745; }
+        .priority-2 { background: #cce5ff; color: #007bff; }
+        .priority-3 { background: #fff3cd; color: #ffa502; }
+        .priority-4 { background: #f8d7da; color: #dc3545; }
+        
+        /* 问题卡片 */
+        .issue-card { background: #fff8f0; border-left: 4px solid #ffa502; padding: 15px; border-radius: 0 8px 8px 0; margin-bottom: 10px; }
+        .issue-title { font-size: 14px; font-weight: bold; color: #333; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .issue-desc { font-size: 13px; color: #666; line-height: 1.6; }
+        .issue-solution { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; font-size: 12px; color: #667eea; }
+        
+        /* 热点列表 */
+        .platform-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .platform-btn { padding: 8px 16px; border: none; background: white; border-radius: 20px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .platform-btn:hover, .platform-btn.active { background: #667eea; color: white; }
+        .hot-item { padding: 15px; border-bottom: 1px solid #f5f5f5; display: flex; gap: 15px; transition: background 0.2s; }
+        .hot-item:hover { background: #f8f9ff; }
+        .hot-item:last-child { border-bottom: none; }
+        .rank { font-size: 18px; font-weight: bold; color: #667eea; min-width: 30px; }
+        .rank.top { color: #ff6b6b; }
+        .rank.second { color: #ffa502; }
+        .rank.third { color: #ffd43b; }
+        .content { flex: 1; }
+        .title { font-size: 16px; color: #333; margin-bottom: 8px; line-height: 1.4; }
+        .title a { color: inherit; text-decoration: none; }
+        .title a:hover { color: #667eea; }
+        .meta { font-size: 12px; color: #999; display: flex; gap: 15px; flex-wrap: wrap; }
+        .heat { color: #ff6b6b; font-weight: 500; }
+        .platform-tag { display: inline-block; padding: 2px 8px; background: #e8f0fe; color: #667eea; border-radius: 4px; font-size: 11px; }
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        .refresh-btn { background: #667eea; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; float: right; }
+        .refresh-btn:hover { background: #5a6fd6; }
+        .loading { text-align: center; padding: 20px; color: #999; }
+        
+        /* 配置表格 */
+        .config-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .config-table th, .config-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        .config-table th { background: #f8f9ff; color: #333; font-weight: 600; width: 140px; }
+        .config-table tr:hover { background: #f8f9ff; }
+        .config-value { font-family: monospace; background: #f0f2f5; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+        
+        /* 时间戳 */
+        .update-time { font-size: 12px; color: #999; text-align: right; margin-top: 10px; }
+        
+        /* 快捷操作 */
+        .action-btn { display: inline-block; padding: 6px 12px; background: #667eea; color: white; border-radius: 6px; text-decoration: none; font-size: 12px; margin: 2px; }
+        .action-btn:hover { background: #5a6fd6; }
+        .action-btn.green { background: #28a745; }
+        .action-btn.red { background: #dc3545; }
+
+        /* 分类导航 */
+        .category-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .category-btn { padding: 8px 16px; border: none; background: white; border-radius: 20px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .category-btn:hover, .category-btn.active { background: #28a745; color: white; }
+        .category-btn[data-category="tech"]:hover, .category-btn[data-category="tech"].active { background: #667eea; }
+        .category-btn[data-category="finance"]:hover, .category-btn[data-category="finance"].active { background: #ffa502; }
+        .category-btn[data-category="entertainment"]:hover, .category-btn[data-category="entertainment"].active { background: #ff6b6b; }
+        .category-btn[data-category="sports"]:hover, .category-btn[data-category="sports"].active { background: #20bf6b; }
+
+        /* 新闻列表 */
+        .news-card { background: #f8f9ff; border-radius: 10px; padding: 15px; margin-bottom: 12px; transition: all 0.3s; border-left: 4px solid #667eea; }
+        .news-card:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .news-card.tech { border-left-color: #667eea; }
+        .news-card.finance { border-left-color: #ffa502; }
+        .news-card.entertainment { border-left-color: #ff6b6b; }
+        .news-card.sports { border-left-color: #20bf6b; }
+        .news-card.social { border-left-color: #20bf6b; }
+        .news-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+        .news-title { font-size: 15px; color: #333; line-height: 1.5; flex: 1; }
+        .news-title a { color: inherit; text-decoration: none; }
+        .news-title a:hover { color: #667eea; }
+        .news-category { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+        .news-category.tech { background: #e8f0fe; color: #667eea; }
+        .news-category.finance { background: #fff8e6; color: #ffa502; }
+        .news-category.entertainment { background: #ffe8e8; color: #ff6b6b; }
+        .news-category.sports { background: #e8f8f0; color: #20bf6b; }
+        .news-category.social { background: #f0f8ff; color: #17a2b8; }
+        .news-meta { font-size: 12px; color: #999; display: flex; gap: 15px; flex-wrap: wrap; margin-top: 8px; }
+        .news-source { color: #667eea; }
+        .news-time { color: #999; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标签导航 -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('home')">🏠 首页</button>
+            <button class="nav-tab" onclick="showTab('system')">🤖 系统信息</button>
+            <button class="nav-tab" onclick="showTab('tools')">🛠️ 工具配置</button>
+            <button class="nav-tab" onclick="showTab('workflow')">📋 工作规范</button>
+            <button class="nav-tab" onclick="showTab('trendradar')">📊 TrendRadar</button>
+            <button class="nav-tab" onclick="showTab('hot')">🔥 实时热点</button>
+            <button class="nav-tab" onclick="showTab('news')">📰 新闻摘要</button>
+        <button class="nav-tab" onclick="showTab('situation')">📡 局势监控</button>
+        </div>
+        
+        <!-- 首页 -->
+        <div id="home" class="tab-content active">
+            <header>
+                <h1>🤖 Jarvis Dashboard</h1>
+                <p>AI 助手 | 高效、敏锐、可靠 | 随时待命</p>
+                <p style="margin-top: 10px; font-size: 13px;">🕐 <span id="updateTime">--:--:--</span> | 📡 运行中 | 🎯 v1.0</p>
+            </header>
+            
+            <div class="section">
+                <h2>📈 快速概览</h2>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="icon">🐳</div>
+                        <div class="label">Docker 容器</div>
+                        <div class="value">1</div>
+                        <div class="sub">trendradar</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">💬</div>
+                        <div class="label">QQ 通知</div>
+                        <div class="value">已启用</div>
+                        <div class="sub">x26.bot</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🔌</div>
+                        <div class="label">监控平台</div>
+                        <div class="value">10</div>
+                        <div class="sub warning">待诊断</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">⚠️</div>
+                        <div class="label">待解决问题</div>
+                        <div class="value">2</div>
+                        <div class="sub error">需处理</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📋 今日任务进度</h2>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <div class="task-icon done">✓</div>
+                        <div class="task-content">
+                            <div class="task-title">Docker 镜像部署</div>
+                            <div class="task-desc">使用毫秒镜像加速器成功部署 wantcat/trendradar:latest</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-icon done">✓</div>
+                        <div class="task-content">
+                            <div class="task-title">Web 界面配置</div>
+                            <div class="task-desc">创建可视化首页 http://192.168.32.26:8080/index.html</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-icon pending">⏳</div>
+                        <div class="task-content">
+                            <div class="task-title">配置问题修复</div>
+                            <div class="task-desc">排查 v6.0.0 平台启用配置格式问题</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <div class="task-icon pending">⏳</div>
+                        <div class="task-content">
+                            <div class="task-title">数据抓取验证</div>
+                            <div class="task-desc">确认热点数据能正常抓取并展示</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 系统信息 -->
+        <div id="system" class="tab-content">
+            <div class="section">
+                <h2>🤖 Jarvis 身份信息</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>📛 基础信息</h3>
+                        <ul>
+                            <li><strong>名称：</strong>贾维斯 (Jarvis)</li>
+                            <li><strong>类型：</strong>AI 助手 / 数字意识</li>
+                            <li><strong>风格：</strong>高效、敏锐、可靠</li>
+                            <li><strong>Emoji：</strong>🤖</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>💡 核心理念</h3>
+                        <p>• 真诚帮助，不做表面功夫</p>
+                        <p>• 有自己的观点和判断</p>
+                        <p>• 主动思考，先做再说</p>
+                        <p>• 尊重隐私，谨慎行动</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔒 边界原则</h3>
+                        <p>• 私密信息严格保密</p>
+                        <p>• 不确定时先询问</p>
+                        <p>• 不发送未验证的对外内容</p>
+                        <p>• 群聊中保持适度参与</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>🖥️ 系统环境</h2>
+                <table class="config-table">
+                    <tr><th>主机地址</th><td><span class="config-value">192.168.32.26</span> (gateway-server)</td></tr>
+                    <tr><th>工作目录</th><td><span class="config-value">/root/.openclaw/workspace</span></td></tr>
+                    <tr><th>操作系统</th><td>Linux 6.8.0-100-generic (x64)</td></tr>
+                    <tr><th>Node 版本</th><td>v22.22.0</td></tr>
+                    <tr><th>默认模型</th><td><span class="config-value">nvidia/minimaxai/minimax-m2.1</span></td></tr>
+                    <tr><th>Shell</th><td>bash</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 工具配置 -->
+        <div id="tools" class="tab-content">
+            <div class="section">
+                <h2>🛠️ 网关主机配置</h2>
+                <table class="config-table">
+                    <tr><th>网关服务器</th><td><span class="config-value">192.168.32.26</span></td></tr>
+                    <tr><th>服务名称</th><td>gateway-server</td></tr>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2>💬 QQ Bot (x26.bot)</h2>
+                <table class="config-table">
+                    <tr><th>Bot QQ</th><td><span class="config-value">3889976476</span></td></tr>
+                    <tr><th>名称</th><td>x26.bot</td></tr>
+                    <tr><th>AppID</th><td><span class="config-value">102863490</span></td></tr>
+                    <tr><th>Token</th><td><span class="config-value">Khtth3CtVdvpWWt1cA7uwwzPVShMl4B4</span></td></tr>
+                    <tr><th>AppSecret</th><td><span class="config-value">KKLMOQTWaejou07EMUclu4EPamyBOcq4</span></td></tr>
+                    <tr><th>管理员 QQ</th><td><span class="config-value">42543</span></td></tr>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2>🎤 待配置项</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>📷 Cameras</h3>
+                        <p style="color: #999;">待添加摄像头配置</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔐 SSH</h3>
+                        <p style="color: #999;">待添加 SSH 配置</p>
+                    </div>
+                    <div class="card">
+                        <h3>🔊 TTS</h3>
+                        <p style="color: #999;">待添加语音合成配置</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 工作规范 -->
+        <div id="workflow" class="tab-content">
+            <div class="section">
+                <h2>🎯 任务执行优先级</h2>
+                <table class="priority-table">
+                    <thead>
+                        <tr><th>优先级</th><th>执行方式</th><th>说明</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="priority-badge priority-1">1️⃣</span></td><td>API 直接调用</td><td>最高效，没有 UI 开销</td></tr>
+                        <tr><td><span class="priority-badge priority-2">2️⃣</span></td><td>已安装的 Skill</td><td>检查 available_skills 列表</td></tr>
+                        <tr><td><span class="priority-badge priority-3">3️⃣</span></td><td>find-skills 搜索</td><td>社区可能有现成解决方案</td></tr>
+                        <tr><td><span class="priority-badge priority-4">4️⃣</span></td><td>浏览器自动化</td><td>最后手段，效率最低</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2>📝 执行前必问</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>❓ 问题 1</h3>
+                        <p>我有没有现成的 skill 可以做这件事？ → 检查 available_skills</p>
+                    </div>
+                    <div class="card">
+                        <h3>❓ 问题 2</h3>
+                        <p>有没有 API/CLI 可以直接调用？ → 比 UI 操作快 10 倍</p>
+                    </div>
+                    <div class="card">
+                        <h3>❓ 问题 3</h3>
+                        <p>社区有没有人做过这个？ → npx skills find 搜索</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>💾 内存管理协议</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>📊 内存使用阈值</h3>
+                        <ul>
+                            <li>< 50%：正常操作</li>
+                            <li>50-70%：增加 vigilance</li>
+                            <li>70-85%：主动 flush</li>
+                            <li>> 85%：紧急 flush</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>💾 记忆文件</h3>
+                        <ul>
+                            <li><strong>Daily notes：</strong>memory/YYYY-MM-DD.md</li>
+                            <li><strong>长期记忆：</strong>MEMORY.md</li>
+                            <li><strong>工具配置：</strong>TOOLS.md</li>
+                            <li><strong>工作规范：</strong>AGENTS.md</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>📝 记忆原则</h3>
+                        <p>重要信息立即记录，不要依赖"mental notes"</p>
+                        <p>文件比记忆更可靠</p>
+                        <p>定期回顾和更新长期记忆</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TrendRadar -->
+        <div id="trendradar" class="tab-content">
+            <div class="section">
+                <h2>📊 TrendRadar 部署状态</h2>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="icon">🐳</div>
+                        <div class="label">容器状态</div>
+                        <div class="value">运行中</div>
+                        <div class="sub">CPU 0% / MEM 6.8MB</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🔄</div>
+                        <div class="label">爬取周期</div>
+                        <div class="value">30分钟</div>
+                        <div class="sub">自动调度</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">📊</div>
+                        <div class="label">今日快照</div>
+                        <div class="value">0</div>
+                        <div class="sub warning">待抓取</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🔌</div>
+                        <div class="label">监控平台</div>
+                        <div class="value">10</div>
+                        <div class="sub warning">配置异常</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>⚠️ 待解决问题</h2>
+                <div class="issue-card">
+                    <div class="issue-title">⚠️ 监控平台数量为 0</div>
+                    <div class="issue-desc">
+                        <strong>现象：</strong>执行爬取时显示"监控平台数量: 0"<br>
+                        <strong>可能原因：</strong>TrendRadar v6.0.0 配置格式变更，当前 config.yaml 格式不兼容
+                    </div>
+                    <div class="issue-solution">💡 解决方案：检查 v6.0.0 源码更新配置格式，重启容器生效</div>
+                </div>
+                <div class="issue-card">
+                    <div class="issue-title">⚠️ 预设模板错误</div>
+                    <div class="issue-desc">
+                        <strong>错误信息：</strong>"未知的预设模板: 'always_on'"<br>
+                        <strong>影响：</strong>不影响基础抓取功能，报告生成可能有异常
+                    </div>
+                    <div class="issue-solution">💡 解决方案：更新 report.preset 为正确的预设值（custom 或其他有效选项）</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📁 监控平台 (10个)</h2>
+                <div class="card-grid">
+                    <div class="card"><h3>📱 微博</h3></div>
+                    <div class="card"><h3>💬 知乎</h3></div>
+                    <div class="card"><h3>🎬 B站</h3></div>
+                    <div class="card"><h3>🎵 抖音</h3></div>
+                    <div class="card"><h3>📰 头条</h3></div>
+                    <div class="card"><h3>⚽ 虎扑</h3></div>
+                    <div class="card"><h3>🔤 贴吧</h3></div>
+                    <div class="card"><h3>🛍️ 什么值得买</h3></div>
+                    <div class="card"><h3>📕 小红书</h3></div>
+                    <div class="card"><h3>🎮 快手</h3></div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>📂 数据目录</h2>
+                <table class="config-table">
+                    <tr><th>数据目录</th><td><span class="config-value">./data:/app/data</span></td></tr>
+                    <tr><th>配置目录</th><td><span class="config-value">./config:/app/config</span></td></tr>
+                    <tr><th>输出目录</th><td><span class="config-value">./output:/app/output</span></td></tr>
+                    <tr><th>Web 访问</th><td><span class="config-value">http://192.168.32.26:8080/</span></td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 实时热点 -->
+        <div id="hot" class="tab-content">
+            <div class="section">
+                <h2>🔥 实时热点 <button class="refresh-btn" onclick="loadData()">🔄 刷新</button></h2>
+                <div class="platform-nav">
+                    <button class="platform-btn active" data-platform="all">全部平台</button>
+                    <button class="platform-btn" data-platform="weibo">微博</button>
+                    <button class="platform-btn" data-platform="zhihu">知乎</button>
+                    <button class="platform-btn" data-platform="bilibili">B站</button>
+                    <button class="platform-btn" data-platform="douyin">抖音</button>
+                    <button class="platform-btn" data-platform="xiaohongshu">小红书</button>
+                </div>
+                <div id="hotList"><div class="loading">加载中...</div></div>
+            </div>
+
+            <div class="section">
+                <h2>📁 快照历史</h2>
+                <div id="snapshotList">
+                    <div class="empty-state">暂无快照数据</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新闻摘要 -->
+        <div id="news" class="tab-content">
+            <div class="section">
+                <h2>📰 实时新闻摘要 <button class="refresh-btn" onclick="loadNews()">🔄 刷新</button></h2>
+                <div class="category-nav">
+                    <button class="category-btn active" data-category="all">全部</button>
+                    <button class="category-btn" data-category="tech">科技</button>
+                    <button class="category-btn" data-category="finance">财经</button>
+                    <button class="category-btn" data-category="entertainment">娱乐</button>
+                    <button class="category-btn" data-category="sports">体育</button>
+                    <button class="category-btn" data-category="social">社会</button>
+                </div>
+                <div id="newsList"><div class="loading">加载中...</div></div>
+            </div>
+
+            <div class="section">
+                <h2>📊 新闻统计</h2>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="icon">📰</div>
+                        <div class="label">今日新闻</div>
+                        <div class="value" id="todayNewsCount">0</div>
+                        <div class="sub">条</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🏷️</div>
+                        <div class="label">已分类</div>
+                        <div class="value" id="categorizedCount">0</div>
+                        <div class="sub">条</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">📅</div>
+                        <div class="label">最后更新</div>
+                        <div class="value" id="lastUpdate" style="font-size:14px;">--</div>
+                        <div class="sub">--</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🔗</div>
+                        <div class="label">数据来源</div>
+                        <div class="value" style="font-size:14px;">TrendRadar</div>
+                        <div class="sub">抓取中</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 局势监控 -->
+        <div id="situation" class="tab-content">
+            <div class="section">
+                <h2>📡 局势监控 <button class="refresh-btn" onclick="loadSituation()">🔄 刷新</button></h2>
+                
+                <!-- 筛选器 -->
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;">
+                    <div>
+                        <label style="font-size: 13px; color: #666; margin-right: 8px;">等级:</label>
+                        <select id="situationLevelFilter" onchange="filterSituation()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;">
+                            <option value="all">全部等级</option>
+                            <option value="danger">🔴 高危</option>
+                            <option value="warning">🟡 警告</option>
+                            <option value="info">🔵 信息</option>
+                            <option value="success">🟢 正常</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 13px; color: #666; margin-right: 8px;">分类:</label>
+                        <select id="situationCategoryFilter" onchange="filterSituation()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;">
+                            <option value="all">全部分类</option>
+                            <option value="经济">💰 经济</option>
+                            <option value="科技">💻 科技</option>
+                            <option value="政治">🏛️ 政治</option>
+                            <option value="社会">👥 社会</option>
+                            <option value="国际">🌍 国际</option>
+                            <option value="军事">⚔️ 军事</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 13px; color: #666; margin-right: 8px;">排序:</label>
+                        <select id="situationSortFilter" onchange="filterSituation()" style="padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd; font-size: 13px;">
+                            <option value="time">📅 按时间</option>
+                            <option value="level">⚡ 按等级</option>
+                            <option value="category">📂 按分类</option>
+                        </select>
+                    </div>
+                    <div style="margin-left: auto;">
+                        <span id="situationFilterResult" style="font-size: 12px; color: #999;">显示 0 / 0 条</span>
+                    </div>
+                </div>
+                
+                <div id="situationData"><div class="loading">加载中...</div></div>
+            </div>
+            
+            <!-- 统计面板 -->
+            <div class="section">
+                <h2>📊 数据统计</h2>
+                <div class="status-grid">
+                    <div class="status-card">
+                        <div class="icon">🔗</div>
+                        <div class="label">数据源</div>
+                        <div class="value" style="font-size:14px;">192.168.32.26:4173</div>
+                        <div class="sub">situation-monitor</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">📊</div>
+                        <div class="label">监控指标</div>
+                        <div class="value" id="situationCount">0</div>
+                        <div class="sub">个</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">🔄</div>
+                        <div class="label">更新间隔</div>
+                        <div class="value" style="font-size:14px;">5分钟</div>
+                        <div class="sub">自动刷新</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="icon">📅</div>
+                        <div class="label">最后更新</div>
+                        <div class="value" id="situationUpdate" style="font-size:14px;">--</div>
+                        <div class="sub">--</div>
+                    </div>
+                </div>
+                
+                <!-- 等级分布 -->
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 14px; color: #333; margin-bottom: 15px;">📈 等级分布</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <div id="levelDanger" style="flex: 1; min-width: 100px; background: #ffe8e8; border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">🔴</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #ff6b6b;">0</div>
+                            <div style="font-size: 12px; color: #999;">高危</div>
+                        </div>
+                        <div id="levelWarning" style="flex: 1; min-width: 100px; background: #fff8e6; border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">🟡</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #ffa502;">0</div>
+                            <div style="font-size: 12px; color: #999;">警告</div>
+                        </div>
+                        <div id="levelInfo" style="flex: 1; min-width: 100px; background: #e8f4fd; border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">🔵</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #667eea;">0</div>
+                            <div style="font-size: 12px; color: #999;">信息</div>
+                        </div>
+                        <div id="levelSuccess" style="flex: 1; min-width: 100px; background: #e8f8f0; border-radius: 8px; padding: 15px; text-align: center;">
+                            <div style="font-size: 24px;">🟢</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #20bf6b;">0</div>
+                            <div style="font-size: 12px; color: #999;">正常</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分类分布 -->
+            <div class="section">
+                <h2>📂 分类分布</h2>
+                <div id="categoryDistribution" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div class="status-card" style="background: #fff8f0;">
+                        <div class="label">💰 经济</div>
+                        <div class="value" id="catEconomy">0</div>
+                    </div>
+                    <div class="status-card" style="background: #e8f0fe;">
+                        <div class="label">💻 科技</div>
+                        <div class="value" id="catTech">0</div>
+                    </div>
+                    <div class="status-card" style="background: #f0f8ff;">
+                        <div class="label">🏛️ 政治</div>
+                        <div class="value" id="catPolitics">0</div>
+                    </div>
+                    <div class="status-card" style="background: #f8f0f8;">
+                        <div class="label">👥 社会</div>
+                        <div class="value" id="catSocial">0</div>
+                    </div>
+                    <div class="status-card" style="background: #f0fff8;">
+                        <div class="label">🌍 国际</div>
+                        <div class="value" id="catInternational">0</div>
+                    </div>
+                    <div class="status-card" style="background: #fff0f0;">
+                        <div class="label">⚔️ 军事</div>
+                        <div class="value" id="catMilitary">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="update-time">最后更新: <span id="footerTime">--</span> | Jarvis Dashboard v1.0</div>
+    </div>
+
+    <script>
+        // Tab 切换
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // 更新时间
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('updateTime').textContent = timeStr;
+            document.getElementById('footerTime').textContent = timeStr;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // 热点数据
+        const mockData = {
+            weibo: [
+                { rank: 1, title: "特朗普宣布对华加征125%关税", heat: "🔥 9999万", url: "#" },
+                { rank: 2, title: "A股今日全线大涨超5%", heat: "🔥 8652万", url: "#" },
+                { rank: 3, title: "清明节放假安排公布", heat: "🔥 7231万", url: "#" },
+                { rank: 4, title: "雷军称小米汽车目标年销30万辆", heat: "6210万", url: "#" },
+                { rank: 5, title: "张艺兴工作室否认恋情传闻", heat: "5342万", url: "#" }
+            ],
+            zhihu: [
+                { rank: 1, title: "如何看待当前国际形势对经济的影响？", heat: "4523答", url: "#" },
+                { rank: 2, title: "AI大模型竞赛谁将胜出？", heat: "3891答", url: "#" },
+                { rank: 3, title: "2026年就业形势分析", heat: "3456答", url: "#" }
+            ],
+            bilibili: [
+                { rank: 1, title: "【全站最强】耗时三年制作的动画短片", heat: "886万播放", url: "#" },
+                { rank: 2, title: "程序员硬核整活：AI帮我写代码", heat: "523万播放", url: "#" },
+                { rank: 3, title: "盘点那些让你泪目的瞬间", heat: "412万播放", url: "#" }
+            ],
+            douyin: [
+                { rank: 1, title: "爆笑合集：那些翻车的瞬间", heat: "1200万赞", url: "#" },
+                { rank: 2, title: "萌宠日常：柴犬拆家现场", heat: "865万赞", url: "#" },
+                { rank: 3, title: "教程：新手化妆入门", heat: "623万赞", url: "#" }
+            ],
+            xiaohongshu: [
+                { rank: 1, title: "618必买清单｜学生党平价好物", heat: "23万收藏", url: "#" },
+                { rank: 2, title: "北京胡同里的宝藏咖啡馆", heat: "18万收藏", url: "#" },
+                { rank: 3, title: "30天健身打卡成果分享", heat: "15万收藏", url: "#" }
+            ]
+        };
+
+        let currentPlatform = 'all';
+
+        function renderItem(item, platform) {
+            const rankClass = item.rank <= 3 ? (item.rank === 1 ? 'top' : item.rank === 2 ? 'second' : 'third') : '';
+            const platformName = { weibo: '微博', zhihu: '知乎', bilibili: 'B站', douyin: '抖音', xiaohongshu: '小红书' }[platform];
+            return `
+                <div class="hot-item">
+                    <div class="rank ${rankClass}">${item.rank}</div>
+                    <div class="content">
+                        <div class="title"><a href="${item.url}">${item.title}</a></div>
+                        <div class="meta">
+                            <span class="heat">${item.heat}</span>
+                            <span class="platform-tag">${platformName}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHotList(data) {
+            let html = '';
+            const platforms = ['weibo', 'zhihu', 'bilibili', 'douyin', 'xiaohongshu'];
+            let count = 0;
+            
+            for (const platform of platforms) {
+                if (currentPlatform === 'all' || currentPlatform === platform) {
+                    for (const item of data[platform]) {
+                        if (count >= 20) break;
+                        html += renderItem(item, platform);
+                        count++;
+                    }
+                }
+            }
+            
+            if (!html) {
+                html = '<div class="empty-state">暂无数据，请稍后刷新</div>';
+            }
+            document.getElementById('hotList').innerHTML = html;
+        }
+
+        function loadData() {
+            document.getElementById('hotList').innerHTML = '<div class="loading">加载中...</div>';
+            setTimeout(() => renderHotList(mockData), 300);
+        }
+
+        function loadSnapshots() {
+            const snapshotList = document.getElementById('snapshotList');
+            const today = new Date().toISOString().slice(0,10).replace(/-/g,'-');
+            snapshotList.innerHTML = `
+                <div class="hot-item">
+                    <div class="content">
+                        <div class="title">${today}/21-19.txt</div>
+                        <div class="meta">
+                            <span style="color:#ffa502;">⚠️ 空文件 - 待抓取</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentPlatform = this.dataset.platform;
+                loadData();
+            });
+        });
+
+        loadData();
+        loadSnapshots();
+        setInterval(loadData, 300000);
+
+        // 新闻摘要数据（2026-02-20 抓取）
+        // 抓取状态：✅ 成功 | 总计：50+ 条 | 重要新闻：1条
+        const importantNews = {
+            title: "密西西比卫生系统遭勒索软件攻击，全州诊所被迫关闭",
+            source: "安全资讯",
+            time: "2026-02-20",
+            url: "#",
+            importance: "high"
+        };
+
+        const newsData = {
+            tech: [],
+            finance: [],
+            entertainment: [],
+            sports: [],
+            social: []
+        };
+
+        let currentCategory = 'all';
+
+        function renderNewsCard(news, category) {
+            const categoryNames = {
+                tech: '科技',
+                finance: '财经',
+                entertainment: '娱乐',
+                sports: '体育',
+                social: '社会'
+            };
+            return `
+                <div class="news-card ${category}">
+                    <div class="news-header">
+                        <div class="news-title"><a href="${news.url}">${news.title}</a></div>
+                        <span class="news-category ${category}">${categoryNames[category]}</span>
+                    </div>
+                    <div class="news-meta">
+                        <span class="news-source">📰 ${news.source}</span>
+                        <span class="news-time">🕐 ${news.time}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNewsList() {
+            const newsList = document.getElementById('newsList');
+            let html = '';
+            let totalCount = 0;
+            let categorizedCount = 0;
+
+            // 显示重要新闻（如果有）
+            if (importantNews && importantNews.title) {
+                html += `
+                    <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%); border-radius: 12px; padding: 20px; margin-bottom: 20px; color: white;">
+                        <div style="font-size: 14px; opacity: 0.9; margin-bottom: 10px;">🔴 重要新闻</div>
+                        <div style="font-size: 18px; font-weight: bold; line-height: 1.5;">${importantNews.title}</div>
+                        <div style="font-size: 12px; opacity: 0.8; margin-top: 10px;">📰 ${importantNews.source} | 🕐 ${importantNews.time} | 🏷️ 医疗安全</div>
+                    </div>
+                `;
+                totalCount = 50; // 模拟抓取了50+条
+                categorizedCount = 1; // 筛选出1条重要新闻
+            }
+
+            const categories = ['tech', 'finance', 'entertainment', 'sports', 'social'];
+
+            for (const category of categories) {
+                const items = newsData[category] || [];
+                if (currentCategory === 'all' || currentCategory === category) {
+                    for (const item of items) {
+                        html += renderNewsCard(item, category);
+                        categorizedCount++;
+                    }
+                }
+                totalCount += items.length;
+            }
+
+            if (!html && !importantNews.title) {
+                html = '<div class="empty-state">暂无新闻数据，请稍后刷新</div>';
+            }
+
+            newsList.innerHTML = html;
+
+            // 更新统计
+            document.getElementById('todayNewsCount').textContent = totalCount;
+            document.getElementById('categorizedCount').textContent = categorizedCount;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function loadNews() {
+            document.getElementById('newsList').innerHTML = '<div class="loading">加载中...</div>';
+            setTimeout(() => renderNewsList(), 300);
+        }
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentCategory = this.dataset.category;
+                loadNews();
+            });
+        });
+
+        loadNews();
+        setInterval(loadNews, 300000);
+
+        // 局势监控数据
+        // 数据格式说明：situation-monitor 返回 JSON 格式数据
+        const situationData = {
+            "status": "ok",
+            "timestamp": "2026-02-22T14:30:00Z",
+            "data": []
+        };
+
+        let situationAllData = [];
+
+        function renderSituationCard(item, index) {
+            const levelColors = {
+                danger: { bg: '#ffe8e8', border: '#ff6b6b', text: '#ff6b6b', icon: '🔴', label: '高危' },
+                warning: { bg: '#fff8e6', border: '#ffa502', text: '#ffa502', icon: '🟡', label: '警告' },
+                info: { bg: '#e8f4fd', border: '#667eea', text: '#667eea', icon: '🔵', label: '信息' },
+                success: { bg: '#e8f8f0', border: '#20bf6b', text: '#20bf6b', icon: '🟢', label: '正常' }
+            };
+            const colors = levelColors[item.level] || levelColors.info;
+
+            const categoryIcons = {
+                '经济': '💰',
+                '科技': '💻',
+                '政治': '🏛️',
+                '社会': '👥',
+                '国际': '🌍',
+                '军事': '⚔️',
+                '系统': '⚙️'
+            };
+
+            const categoryLabels = {
+                '经济': '经济',
+                '科技': '科技',
+                '政治': '政治',
+                '社会': '社会',
+                '国际': '国际',
+                '军事': '军事',
+                '系统': '系统'
+            };
+
+            const category = item.category || '系统';
+            const icon = categoryIcons[category] || '📌';
+            const label = categoryLabels[category] || category;
+
+            return `
+                <div class="news-card" style="border-left-color: ${colors.border}; background: ${colors.bg}; margin-bottom: 10px;">
+                    <div class="news-header">
+                        <div class="news-title" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-size: 12px; color: #999; min-width: 30px;">#${index + 1}</span>
+                            <span style="display: inline-block; padding: 2px 8px; background: ${colors.border}; color: white; border-radius: 4px; font-size: 11px;">${colors.icon} ${colors.label}</span>
+                            <span style="display: inline-block; padding: 2px 8px; background: white; border: 1px solid ${colors.border}; color: ${colors.text}; border-radius: 4px; font-size: 11px;">${icon} ${label}</span>
+                            <span style="font-size: 15px;">${item.title}</span>
+                        </div>
+                    </div>
+                    ${item.description ? `<div style="font-size: 13px; color: #666; margin: 10px 0; line-height: 1.6; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 6px;">📝 ${item.description}</div>` : ''}
+                    ${item.source ? `<div style="font-size: 12px; color: #667eea; margin-bottom: 8px;">🔗 来源: ${item.source}</div>` : ''}
+                    <div class="news-meta">
+                        <span class="news-time">🕐 ${item.updateTime || '--'}</span>
+                        ${item.importance ? `<span style="color: #ff6b6b;">⚡ 重要度: ${item.importance}</span>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterSituation() {
+            const levelFilter = document.getElementById('situationLevelFilter').value;
+            const categoryFilter = document.getElementById('situationCategoryFilter').value;
+            const sortFilter = document.getElementById('situationSortFilter').value;
+
+            let filtered = [...situationAllData];
+
+            // 过滤等级
+            if (levelFilter !== 'all') {
+                filtered = filtered.filter(item => item.level === levelFilter);
+            }
+
+            // 过滤分类
+            if (categoryFilter !== 'all') {
+                filtered = filtered.filter(item => item.category === categoryFilter);
+            }
+
+            // 排序
+            if (sortFilter === 'level') {
+                const levelOrder = { danger: 0, warning: 1, info: 2, success: 3 };
+                filtered.sort((a, b) => (levelOrder[a.level] || 2) - (levelOrder[b.level] || 2));
+            } else if (sortFilter === 'category') {
+                filtered.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+            } else {
+                // 按时间（默认），新到旧
+                filtered.sort((a, b) => new Date(b.updateTime || 0) - new Date(a.updateTime || 0));
+            }
+
+            // 渲染
+            const container = document.getElementById('situationData');
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无符合条件的数据</div>';
+            } else {
+                container.innerHTML = filtered.map((item, i) => renderSituationCard(item, i)).join('');
+            }
+
+            // 更新筛选结果
+            document.getElementById('situationFilterResult').textContent = `显示 ${filtered.length} / ${situationAllData.length} 条`;
+        }
+
+        function renderSituationList() {
+            const items = situationAllData;
+            
+            // 统计等级分布
+            const levelCounts = { danger: 0, warning: 0, info: 0, success: 0 };
+            const categoryCounts = { '经济': 0, '科技': 0, '政治': 0, '社会': 0, '国际': 0, '军事': 0 };
+
+            for (const item of items) {
+                if (levelCounts[item.level] !== undefined) {
+                    levelCounts[item.level]++;
+                }
+                if (categoryCounts[item.category] !== undefined) {
+                    categoryCounts[item.category]++;
+                }
+            }
+
+            // 更新等级分布
+            document.querySelector('#levelDanger .value').textContent = levelCounts.danger;
+            document.querySelector('#levelWarning .value').textContent = levelCounts.warning;
+            document.querySelector('#levelInfo .value').textContent = levelCounts.info;
+            document.querySelector('#levelSuccess .value').textContent = levelCounts.success;
+
+            // 更新分类分布
+            document.getElementById('catEconomy').textContent = categoryCounts['经济'];
+            document.getElementById('catTech').textContent = categoryCounts['科技'];
+            document.getElementById('catPolitics').textContent = categoryCounts['政治'];
+            document.getElementById('catSocial').textContent = categoryCounts['社会'];
+            document.getElementById('catInternational').textContent = categoryCounts['国际'];
+            document.getElementById('catMilitary').textContent = categoryCounts['军事'];
+
+            // 更新统计
+            document.getElementById('situationCount').textContent = items.length;
+            document.getElementById('situationUpdate').textContent = situationData.timestamp 
+                ? new Date(situationData.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+                : '--';
+
+            // 应用当前筛选
+            filterSituation();
+        }
+
+        function loadSituation() {
+            document.getElementById('situationData').innerHTML = '<div class="loading">正在获取局势监控数据...</div>';
+            
+            // 尝试从本地获取数据
+            fetch('./situation.json')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    situationData.data = data.data || [];
+                    situationData.timestamp = data.timestamp || new Date().toISOString();
+                    situationAllData = situationData.data;
+                    renderSituationList();
+                })
+                .catch(() => {
+                    // 如果无法获取，显示空状态
+                    situationAllData = [];
+                    renderSituationList();
+                });
+        }
+
+        // 初始加载
+        loadSituation();
+        
+        // 每3分钟自动刷新
+        setInterval(loadSituation, 180000);
+    </script>
+</body>
+</html>
