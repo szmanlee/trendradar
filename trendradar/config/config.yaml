@@ -100,6 +100,18 @@ storage:
 
 # 平台配置
 platforms:
+  # 平台列表 - 供爬虫读取（使用 sources 字段）
+  sources:
+    - weibo
+    - zhihu
+    - bilibili
+    - douyin
+    - toutiao
+    - hupu
+    - tieba
+    - smzdm
+    - xiaohongshu
+    - kuaishou
   # 微博热搜（默认启用）
   weibo:
     enabled: true

@@ -56,3 +56,132 @@
 - **禁用 WebSocket** (`skipWsConnect: true`) 解决消息无法送达问题
 - **使用 webhook 模式** (`useWebhookOnly: true`) 简化连接
 - 令牌 ID（18td4xdg4jn6u8a5o49xpt1oir）对应访问令牌 `nsycfxdt4jr3xb1nofh631d4zh`
+
+---
+
+## 🎯 Jarvis Skills 安装完成 (2026-02-22 23:43 UTC)
+
+### ✅ 已安装 (6/6, 100%)
+| Skill | 功能 | 状态 |
+|-------|------|------|
+| **code** (v1.0.4) | 代码工作流（规划/执行/验证） | ✅ 已安装 |
+| **tdd-guide** | 测试驱动开发指南 | ✅ 已安装 |
+| **exa-web-search-free** | Exa 免费网页搜索 | ✅ 已安装（需配置 mcporter） |
+| **voice-reply** | 本地语音合成（TTS） | ✅ 已安装（需安装依赖） |
+| **cognitive-memory** | 多存储记忆系统 | ✅ 已安装（需初始化） |
+| **self-improving-agent** | 自我提升代理 | ✅ 已安装 |
+
+### 替代方案
+- `coding-agent` 未找到 → 使用 **code** (v1.0.4, ⭐ 0.911) 替代
+
+### 配置状态
+| Skill | 依赖/配置 |
+|-------|-----------|
+| exa-web-search-free | `mcporter config add exa https://mcp.exa.ai/mcp` |
+| voice-reply | `scripts/install.sh` 安装 sherpa-onnx + piper voices |
+| cognitive-memory | `scripts/init_memory.sh` 初始化记忆目录 |
+
+---
+
+## 🎯 已安装 Skills 完整清单 (2026-02-23 更新)
+
+| # | Skill | 路径 | 状态 |
+|---|-------|------|------|
+| 1 | **code** | `/root/.openclaw/workspace/skills/code/` | ✅ 即用型 |
+| 2 | **tdd-guide** | `/root/.openclaw/workspace/skills/tdd-guide/` | ✅ 7个脚本 |
+| 3 | **exa-web-search-free** | `/root/.openclaw/workspace/skills/exa-web-search-free/` | ⚠️ 需配置 mcporter |
+| 4 | **voice-reply** | `/root/.openclaw/workspace/skills/voice-reply/` | ⚠️ 需安装 TTS 依赖 |
+| 5 | **cognitive-memory** | `/root/.openclaw/workspace/skills/cognitive-memory/` | ⚠️ 需初始化 |
+| 6 | **self-improving-agent** | `/root/.openclaw/skills/self-improving-agent/` | ✅ 即用型 |
+| 7 | **tavily-search** | `/root/.openclaw/workspace/skills/tavily-search/` | ✅ MCP 模式 |
+| 8 | **telnyx-stt** | `/root/.openclaw/workspace/skills/telnyx-stt/` | ❓ 待检查 |
+| 9 | **memory-system** | `/root/.openclaw/workspace/memory-system/` | ❓ 旧版/实验性 |
+
+**配置状态汇总**：
+- ✅ 即用型：code, self-improving-agent, tdd-guide, tavily-search (MCP)
+- ⚠️ 需配置：exa-web-search-free (mcporter), voice-reply (TTS), cognitive-memory (初始化)
+- ❓ 待检查：telnyx-stt, memory-system
+
+---
+
+## 🔑 GitHub 凭证管理 (待补充)
+
+### ⚠️ 重要提示
+- **凭证存储**: GitHub Token 未保存在当前上下文中
+- **建议**: 首次使用后保存到 `~/.netrc` 或环境变量
+- **安全提醒**: 不要在聊天中直接发送 Token
+
+### 当前状态
+- GitHub 用户名: ____________ (待补充)
+- Personal Access Token: ____________ (待补充)
+- 存储位置建议: `~/.netrc` 或 `~/.bashrc`
+
+---
+
+## 📊 Jarvis Dashboard v2.0 控制面板 (2026-02-24)
+
+### 部署信息
+| 配置项 | 值 |
+|--------|-----|
+| 位置 | `/root/.openclaw/workspace/jarvis-dashboard/` |
+| 服务端口 | 8080 |
+| 访问地址 | http://192.168.32.26:8080/ |
+
+### 功能模块 (11 个)
+| 模块 | 功能 |
+|------|------|
+| 📊 仪表盘 | 系统概览、CPU/内存/磁盘、容器统计 |
+| 📈 系统监控 | 内存环图、磁盘条、进程列表 |
+| 🐳 容器管理 | Docker 容器启停 |
+| 📁 文件管理 | 文件浏览、目录导航 |
+| 🔧 终端 | 命令执行、CWD 跟踪 |
+| 📝 日志查看 | 系统日志/OpenClaw 日志 |
+| 🌐 网络工具 | Ping/端口/DNS 查询 |
+| 🤖 AI 配置 | 模型信息、API 配置 |
+| 🧩 Skills | Skills 列表管理 |
+| ⚡ 快捷命令 | 预设常用操作 |
+| ⚙️ 设置 | 主题、搜索等配置 |
+
+### 待实现
+- [ ] 对接后端 API 服务（当前静态页面可用）
+- [ ] 参考 192.168.32.23:2380 实现完善功能
+
+---
+
+## 🖥️ TrendRadar 服务管理 (2026-02-24)
+
+### 服务配置
+| 端口 | 服务 | 状态 | 管理方式 |
+|------|------|------|----------|
+| 2680 | TrendRadar 静态文件 | ✅ 运行中 | systemd service |
+| 4173 | 局势监控预览 | ✅ 运行中 | npm preview |
+| 8080 | Jarvis Dashboard | ✅ 运行中 | python http.server |
+
+### systemd service 配置
+```ini
+[Unit]
+Description=TrendRadar HTTP Server (port 2680)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/.openclaw/workspace/trendradar/output
+ExecStart=/usr/bin/python3 -m http.server 2680
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 服务管理命令
+```bash
+# 查看状态
+systemctl status trendradar-2680
+
+# 重启服务
+systemctl restart trendradar-2680
+
+# 查看日志
+tail -f /tmp/2680.log
+```

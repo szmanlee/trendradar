@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 Jarvis Dashboard - 2026-02-22</title>
+    <title>🛠️ 控制面板</title>
+    <script src="skills-data.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; padding: 20px; }
@@ -534,49 +535,47 @@
             
             <!-- 已安装 Skills -->
             <div class="section">
-                <h2>✅ 本地已安装 Skills (6)</h2>
+                <h2 id="installedSkillsTitle">✅ 本地已安装 Skills (加载中...)</h2>
                 <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
                     当前系统已安装 Skills 列表，位于 <code>~/.openclaw/skills/</code>
                 </p>
-                <div class="status-grid">
-                    <div class="status-card">
-                        <div class="icon">🌐</div>
-                        <div class="label">clawhub</div>
-                        <div class="value">v1.0</div>
-                        <div class="sub">ClawHub CLI</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🛡️</div>
-                        <div class="label">healthcheck</div>
-                        <div class="value">v1.0</div>
-                        <div class="sub">安全审计</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🔮</div>
-                        <div class="label">oracle</div>
-                        <div class="value">v1.0</div>
-                        <div class="sub">Oracle CLI</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🛠️</div>
-                        <div class="label">skill-creator</div>
-                        <div class="value">v1.0</div>
-                        <div class="sub">技能创建</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">📦</div>
-                        <div class="label">tmux</div>
-                        <div class="value">v1.0</div>
-                        <div class="sub">Tmux 控制</div>
-                    </div>
-                    <div class="status-card">
-                        <div class="icon">🌤️</div>
-                        <div class="label">weather</div>
-                        <div class="value">v1.0</div>
-                        <div class="sub">天气查询</div>
-                    </div>
+                <div id="installedSkillsGrid" class="status-grid">
+                    <div class="loading">正在加载已安装 Skills...</div>
                 </div>
-                
+
+                <script>
+                // 动态加载已安装 Skills
+                function loadInstalledSkills() {
+                    fetch('./installed-skills.json')
+                        .then(r => r.json())
+                        .then(data => {
+                            const skills = data.skills || [];
+                            document.getElementById('installedSkillsTitle').innerHTML = `✅ 本地已安装 Skills (${skills.length})`;
+                            if (skills.length === 0) {
+                                document.getElementById('installedSkillsGrid').innerHTML = '<div class="empty-state">暂无已安装 Skills</div>';
+                                return;
+                            }
+                            let html = '';
+                            skills.forEach(s => {
+                                html += `
+                                    <div class="status-card">
+                                        <div class="icon">${s.icon || '📦'}</div>
+                                        <div class="label">${s.name}</div>
+                                        <div class="value">${s.version || '-'}</div>
+                                        <div class="sub">${s.desc || ''}</div>
+                                    </div>
+                                `;
+                            });
+                            document.getElementById('installedSkillsGrid').innerHTML = html;
+                        })
+                        .catch(() => {
+                            document.getElementById('installedSkillsTitle').innerHTML = '✅ 本地已安装 Skills (0)';
+                            document.getElementById('installedSkillsGrid').innerHTML = '<div class="empty-state">加载失败</div>';
+                        });
+                }
+                loadInstalledSkills();
+                </script>
+
                 <h3 style="margin-top: 25px; margin-bottom: 15px; font-size: 16px;">📦 安装新 Skills</h3>
                 <div class="config-table">
                     <table>
@@ -933,9 +932,9 @@
         loadSnapshots();
         setInterval(loadData, 300000);
 
-        // 新闻摘要数据（2026-02-20 抓取）
-        // 抓取状态：✅ 成功 | 总计：50+ 条 | 重要新闻：1条
-        const importantNews = {
+        // 新闻摘要数据（从 news.json 动态加载）
+        // 数据来源: situation-monitor/daily-summary-*.md
+        let importantNews = {
             title: "密西西比卫生系统遭勒索软件攻击，全州诊所被迫关闭",
             source: "安全资讯",
             time: "2026-02-20",
@@ -943,7 +942,7 @@
             importance: "high"
         };
 
-        const newsData = {
+        let newsData = {
             tech: [],
             finance: [],
             entertainment: [],
@@ -1019,9 +1018,19 @@
             document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
         }
 
-        function loadNews() {
-            document.getElementById('newsList').innerHTML = '<div class="loading">加载中...</div>';
-            setTimeout(() => renderNewsList(), 300);
+        async function loadNews() {
+            document.getElementById('newsList').innerHTML = '<div class="loading">正在加载新闻...</div>';
+            try {
+                const res = await fetch('./news.json');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.important) importantNews = data.important;
+                    if (data.categories) newsData = data.categories;
+                }
+            } catch (e) {
+                console.log('News data unavailable:', e.message);
+            }
+            renderNewsList();
         }
 
         document.querySelectorAll('.category-btn').forEach(btn => {
@@ -1318,8 +1327,9 @@
                    </div>`
                 : '';
             
-            // 中文名优先显示
+            // 中文名优先显示，获取中文描述
             const displayName = skill.nameZh || skill.name;
+            const displayDesc = getSkillDescZh(skill.name, skill.desc);
             
             return `
                 <div class="status-card" style="min-width: 280px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);"
@@ -1337,13 +1347,117 @@
                             ${categoryName}
                         </span>
                     </div>
-                    <div style="color: #666; font-size: 13px; line-height: 1.6; margin-bottom: 8px;">${skill.desc}</div>
+                    <div style="color: #666; font-size: 13px; line-height: 1.6; margin-bottom: 8px;">${displayDesc}</div>
                     ${tagsHtml}
                     <div style="color: #667eea; font-size: 12px; display: flex; align-items: center; gap: 5px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #eee;">
                         <span style="color: #999;">🔗</span> ${skill.url}
                     </div>
                 </div>
             `;
+        }
+        
+        // 常用 Skill 中文描述翻译
+        const skillDescZh = {
+            "coding-agent": "运行 Codex CLI、Claude Code、OpenCode 等编码代理",
+            "code-mentor": "全层次 AI 编程导师",
+            "code-conductor": "AI 驱动的软件开发平台，快速构建应用",
+            "ai-coding-agent": "AI 驱动的自动化编码代理",
+            "agent-council": "创建自主 AI 代理的完整工具包",
+            "agent-config": "智能修改代理核心上下文文件",
+            "agent-identity-kit": "AI 代理便携式身份系统",
+            "backend-patterns": "后端架构模式、API 设计、数据库最佳实践",
+            "browse": "浏览器自动化完整指南",
+            "claude-optimised": "CLAUDE.md 文件编写优化指南",
+            "buildlog": "记录、导出和分享 AI 编码会话为可回放日志",
+            "cognitive-memory": "多存储长期记忆系统",
+            "self-improving-agent": "自我提升的 AI 代理框架",
+            "voice-reply": "本地语音合成 (TTS) 技能",
+            "exa-web-search-free": "免费网页搜索工具",
+            "tdd-guide": "测试驱动开发指南",
+            "healthcheck": "主机安全加固与风险配置",
+            "tmux": "远程控制 tmux 会话",
+            "oracle": "Oracle CLI 最佳实践",
+            "skill-creator": "创建和更新 AgentSkills",
+            "clawhub": "ClawHub CLI 技能管理",
+            "weather": "获取当前天气和预报",
+            "github-actions": "GitHub Actions 自动化",
+            "docker": "Docker 容器管理",
+            "kubernetes": "Kubernetes 编排",
+            "nginx": "Nginx Web 服务器配置",
+            "postgresql": "PostgreSQL 数据库操作",
+            "redis": "Redis 缓存与队列",
+            "mongodb": "MongoDB 文档数据库",
+            "linux-commands": "Linux 命令行工具",
+            "bash-scripting": "Bash 脚本编程",
+            "python-scripting": "Python 脚本编程",
+            "shell-commands": "Shell 命令执行",
+            "system-monitoring": "系统监控与性能分析",
+            "file-management": "文件管理操作",
+            "text-processing": "文本处理工具",
+            "data-analysis": "数据分析与可视化",
+            "web-scraping": "网页抓取工具",
+            "api-client": "API 客户端工具",
+            "network-tools": "网络诊断工具",
+            "security-tools": "安全检测工具",
+            "password-manager": "密码管理工具",
+            "encryption-tools": "加密解密工具"
+        };
+        
+        // 获取 Skill 中文描述
+        function getSkillDescZh(name, desc) {
+            const lowerName = name.toLowerCase().replace(/[-_]/g, '');
+            // 先尝试精确匹配名称
+            if (skillDescZh[name]) return skillDescZh[name];
+            // 尝试模糊匹配
+            for (const [key, value] of Object.entries(skillDescZh)) {
+                if (lowerName.includes(key) || key.includes(lowerName)) return value;
+            }
+            // 如果是中文名但英文描述，尝试翻译常见词汇
+            if (desc) {
+                const translations = {
+                    "AI": "人工智能",
+                    "agent": "代理",
+                    "tool": "工具",
+                    "guide": "指南",
+                    "complete": "完整",
+                    "comprehensive": "全面",
+                    "expert": "专家",
+                    "professional": "专业",
+                    "create": "创建",
+                    "manage": "管理",
+                    "build": "构建",
+                    "deploy": "部署",
+                    "automate": "自动化",
+                    "search": "搜索",
+                    "monitor": "监控",
+                    "analyze": "分析",
+                    "generate": "生成",
+                    "run": "运行",
+                    "use": "使用",
+                    "help": "帮助",
+                    "code": "代码",
+                    "programming": "编程",
+                    "development": "开发",
+                    "software": "软件",
+                    "application": "应用",
+                    "platform": "平台",
+                    "system": "系统",
+                    "data": "数据",
+                    "file": "文件",
+                    "web": "网页",
+                    "api": "接口",
+                    "database": "数据库",
+                    "server": "服务器",
+                    "cloud": "云",
+                    "container": "容器"
+                };
+                let zhDesc = desc;
+                for (const [en, zh] of translations) {
+                    zhDesc = zhDesc.replace(new RegExp(en, 'gi'), zh);
+                }
+                if (zhDesc !== desc) return zhDesc;
+            }
+            return desc;
         }
         
         // 获取中文分类名称
@@ -1366,37 +1480,68 @@
         
         // 渲染分类视图 (按分类分组显示 - 增强版)
         function renderByCategories() {
+            // 从 allSkills 中按分类提取真实数据
+            const allSkills = window.clawSkillsData?.allSkills || [];
+            
+            // 构建分类到 skills 的映射
+            const categorySkillsMap = {};
+            window.clawSkillsData.categories.forEach(cat => {
+                categorySkillsMap[cat.id] = [];
+            });
+            
+            // 分配 skills 到对应分类
+            allSkills.forEach(skill => {
+                if (categorySkillsMap[skill.category]) {
+                    categorySkillsMap[skill.category].push(skill);
+                }
+            });
+            
             let html = '<div style="display: flex; flex-direction: column; gap: 25px;">';
             
             window.clawSkillsData.categories.forEach(cat => {
+                const skillsInCategory = categorySkillsMap[cat.id] || [];
+                const displayCount = Math.min(skillsInCategory.length, 12); // 最多显示12个
+                
                 html += `
                     <div style="background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%); border-radius: 16px; padding: 20px; border: 1px solid #eee; transition: box-shadow 0.2s;"
                          onmouseover="this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.15)';"
                          onmouseout="this.style.boxShadow='none';">
-                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid linear-gradient(90deg, #667eea, #764ba2);">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 2px solid #667eea;">
                             <span style="font-size: 28px;">${cat.icon}</span>
                             <div style="flex: 1;">
                                 <div style="font-weight: bold; font-size: 18px; color: #333;">${cat.name}</div>
                                 <div style="font-size: 12px; color: #999; margin-top: 3px;">${cat.desc || ''}</div>
                             </div>
                             <span style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 5px 14px; border-radius: 15px; font-size: 14px; font-weight: bold;">
-                                ${cat.count}
+                                ${skillsInCategory.length}
                             </span>
                         </div>
                         <div style="display: flex; flex-wrap: wrap; gap: 12px;">
                 `;
                 
-                // 显示该分类的技能示例
-                html += renderSkillCard({
-                    nameZh: cat.name,
-                    name: cat.name,
-                    desc: `包含 ${cat.count} 个精选 Skills，涵盖 ${cat.desc || '各类工具'}。点击查看详情。`,
-                    category: cat.id,
-                    categoryName: cat.name,
-                    url: `https://clawhub.com/search?q=${cat.id}`,
-                    icon: cat.icon,
-                    tags: ['查看全部', '精选']
-                });
+                // 显示该分类的 skills（真实数据）
+                if (skillsInCategory.length > 0) {
+                    // 显示最多12个技能
+                    skillsInCategory.slice(0, 12).forEach(skill => {
+                        html += renderSkillCard(skill);
+                    });
+                } else {
+                    // 无数据时显示提示
+                    html += `<div style="padding: 20px; text-align: center; color: #999; width: 100%;">
+                        <span style="font-size: 24px;">📭</span>
+                        <p style="margin: 10px 0 0 0;">该分类暂无数据</p>
+                    </div>`;
+                }
+                
+                // 如果超过12个，显示提示
+                if (skillsInCategory.length > 12) {
+                    html += `
+                        <div style="padding: 10px 20px; text-align: center; width: 100%; border: 2px dashed #667eea; border-radius: 12px; background: linear-gradient(135deg, #667eea08, #764ba208); margin-top: 10px;">
+                            <span style="color: #667eea;">+ 还有 ${skillsInCategory.length - 12} 个 Skills</span>
+                            <span style="color: #999; margin-left: 10px;">点击上方筛选器查看全部</span>
+                        </div>
+                    `;
+                }
                 
                 html += `
                         </div>
@@ -1412,7 +1557,7 @@
             </div>`;
             
             document.getElementById('clawSkillsList').innerHTML = html;
-            document.getElementById('filteredCount').textContent = window.clawSkillsData.stats.totalSkills.toLocaleString();
+            document.getElementById('filteredCount').textContent = allSkills.length.toLocaleString();
             document.getElementById('loadMoreContainer').style.display = 'none';
         }
         
@@ -1468,23 +1613,25 @@
                 return;
             }
             
-            // 从 featured 列表中筛选作为示例
-            if (window.clawSkillsData && window.clawSkillsData.featured) {
-                allFilteredSkills = window.clawSkillsData.featured.filter(skill => {
-                    const matchSearch = search === '' || 
-                        skill.name.toLowerCase().includes(search) || 
-                        skill.desc.toLowerCase().includes(search);
-                    const matchCategory = category === 'all' || skill.category === category;
-                    return matchSearch && matchCategory;
-                }).map(s => ({
-                    ...s,
-                    name_lower: s.name.toLowerCase(),
-                    desc_lower: s.desc.toLowerCase()
-                }));
-            }
+            // 优先使用完整数据(allSkills)，回退到 featured
+            let sourceData = window.clawSkillsData?.allSkills?.length > 0 
+                ? window.clawSkillsData.allSkills 
+                : (window.clawSkillsData?.featured || []);
             
-            // 如果搜索词不为空，添加模拟结果
-            if (search.length > 2) {
+            allFilteredSkills = sourceData.filter(skill => {
+                const matchSearch = search === '' || 
+                    (skill.name && skill.name.toLowerCase().includes(search)) || 
+                    (skill.desc && skill.desc.toLowerCase().includes(search));
+                const matchCategory = category === 'all' || skill.category === category;
+                return matchSearch && matchCategory;
+            }).map(s => ({
+                ...s,
+                name_lower: s.name ? s.name.toLowerCase() : '',
+                desc_lower: s.desc ? s.desc.toLowerCase() : ''
+            }));
+            
+            // 如果搜索词不为空且没有结果，添加模拟结果
+            if (search.length > 2 && allFilteredSkills.length < 3) {
                 const searchResults = [
                     { name: `${search}-ai`, desc: `AI assistant for ${search}`, category: 'ai', url: `https://example.com/${search}`, icon: '🤖' },
                     { name: `${search}-cli`, desc: `CLI tool for ${search}`, category: 'cli', url: `https://example.com/${search}-cli`, icon: '💻' },
@@ -1501,46 +1648,35 @@
         }
         
         // 加载 Skills 数据
+        // 从本地文件加载完整数据
+        if (typeof window.clawSkillsFullData !== 'undefined') {
+            window.clawSkillsData = {
+                lastUpdated: window.clawSkillsFullData.lastUpdated,
+                totalSkills: window.clawSkillsFullData.totalSkills,
+                totalCategories: window.clawSkillsFullData.totalCategories,
+                categories: window.clawSkillsFullData.categories,
+                featured: window.clawSkillsData?.featured || [],
+                quickCategories: window.clawSkillsData?.quickCategories || [],
+                stats: window.clawSkillsData?.stats || {}
+            };
+            // 使用完整数据
+            window.clawSkillsData.allSkills = window.clawSkillsFullData.allSkills;
+            console.log('[Claw-Skills] 完整数据已加载: ' + window.clawSkillsFullData.totalSkills + ' skills');
+        } else {
+            console.warn('[Claw-Skills] 未找到完整数据文件，使用内联数据');
+        }
+        
         function loadClawSkills() {
             const listContainer = document.getElementById('clawSkillsList');
-            listContainer.innerHTML = '<div class="loading">正在加载 Skills 数据...</div>';
             
-            // 加载外部数据文件
-            const script = document.createElement('script');
-            script.src = 'skills-data.min.js';
-            script.onload = function() {
-                initCategoryFilter();
-                
-                // 初始化显示全部分类视图
-                isFeaturedMode = false;
-                isAllCategoriesMode = true;
-                allFilteredSkills = [];
-                renderByCategories();
-            };
-            script.onerror = function() {
-                // 如果加载失败，使用内联数据
-                if (typeof awesomeSkillsData !== 'undefined') {
-                    window.clawSkillsData = {
-                        categories: [
-                            { id: 'coding', name: '💻 Coding & IDEs', count: 133, icon: '🖥️' },
-                            { id: 'ai', name: '🤖 AI & LLMs', count: 287, icon: '🧠' },
-                            { id: 'devops', name: '☁️ DevOps & Cloud', count: 212, icon: '☁️' },
-                            { id: 'webdev', name: '🌐 Web & Frontend', count: 202, icon: '🎨' },
-                            { id: 'productivity', name: '⚡ Productivity', count: 135, icon: '🚀' },
-                            { id: 'search', name: '🔍 Search & Research', count: 253, icon: '🔎' }
-                        ],
-                        featured: awesomeSkillsData,
-                        totalSkills: 3002
-                    };
-                    initCategoryFilter();
-                    isFeaturedMode = false;
-                    isAllCategoriesMode = true;
-                    renderByCategories();
-                } else {
-                    listContainer.innerHTML = '<div class="error">加载失败，请刷新重试</div>';
-                }
-            };
-            document.head.appendChild(script);
+            // 数据已内联，直接初始化
+            initCategoryFilter();
+            
+            // 初始化显示全部分类视图
+            isFeaturedMode = false;
+            isAllCategoriesMode = true;
+            allFilteredSkills = [];
+            renderByCategories();
         }
         
         // 页面加载完成后初始化
